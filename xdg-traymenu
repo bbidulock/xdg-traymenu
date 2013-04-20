@@ -1,0 +1,86 @@
+#!/usr/bin/perl
+
+my $here = $0; $here =~ s{/[^/]*$}{};
+unshift @INC, "$here/lib";
+
+require XDG::Menu::Parser;
+require XDG::Menu::Fluxbox;
+require XDG::Menu::Blackbox;
+
+use Getopt::Long;
+use strict;
+use warnings;
+
+my %options = (
+    help=>'',
+);
+
+my $syntax = GetOptions(
+    "help|h"=>\$options{help},
+);
+
+my $XDG_CONFIG_HOME = $ENV{XDG_CONFIG_HOME} if $ENV{XDG_CONFIG_HOME};
+$XDG_CONFIG_HOME = "$ENV{HOME}/.config" unless $XDG_CONFIG_HOME;
+$ENV{XDG_CONFIG_HOME} = $XDG_CONFIG_HOME;
+
+my $XDG_CONFIG_DIRS = $ENV{XDG_CONFIG_DIRS} if $ENV{XDG_CONFIG_DIRS};
+$XDG_CONFIG_DIRS = '/etc/xdg' unless $XDG_CONFIG_DIRS;
+$ENV{XDG_CONFIG_DIRS} = $XDG_CONFIG_DIRS;
+
+my $XDG_DATA_HOME = $ENV{XDG_DATA_HOME} if $ENV{XDG_DATA_HOME};
+$XDG_DATA_HOME = "$ENV{HOME}/.local/share" unless $XDG_DATA_HOME;
+$ENV{XDG_DATA_HOME} = $XDG_DATA_HOME;
+
+my $XDG_DATA_DIRS = $ENV{XDG_DATA_DIRS} if $ENV{XDG_DATA_DIRS};
+$XDG_DATA_DIRS = '/usr/local/share:/usr/share' unless $XDG_DATA_DIRS;
+$ENV{XDG_DATA_DIRS} = $XDG_DATA_DIRS;
+
+my $XDG_MENU_PREFIX = $ENV{XDG_MENU_PREFIX} if $ENV{XDG_MENU_PREFIX};
+$XDG_MENU_PREFIX = '' unless $XDG_MENU_PREFIX;
+$ENV{XDG_MENU_PREFIX} = $XDG_MENU_PREFIX;
+
+my @XDG_DATA_DIRS = ($XDG_DATA_HOME, split(/:/,$XDG_DATA_DIRS));
+my @XDG_CONFIG_DIRS = ($XDG_CONFIG_HOME, split(/:/,$XDG_CONFIG_DIRS));
+
+my $XDG_MENU = 'applications';
+
+our @XDG_APPLICATION_MENUS = map {(-f $_)?$_:()} map {$_?"$_/menus/${XDG_MENU_PREFIX}${XDG_MENU}.menu":()} @XDG_CONFIG_DIRS;
+our @XDG_MERGED_DIRS = map {$_?"$_/menus/${XDG_MENU}-merged":()} @XDG_CONFIG_DIRS;
+our @XDG_APPLICATIONS_DIRS = map {$_?"$_/applications":()} @XDG_DATA_DIRS;
+our @XDG_ICONS_DIRS = map {$_?"$_/icons":()} @XDG_DATA_DIRS;
+our @XDG_DIRECTORY_DIRS = map {$_?"$_/desktop-directories":()} @XDG_DATA_DIRS;
+
+my $XDG_CURRENT_DESKTOP = $ENV{XDG_CURRENT_DESKTOP};
+$XDG_CURRENT_DESKTOP = 'FLUXBOX' unless $XDG_CURRENT_DESKTOP;
+$ENV{XDG_CURRENT_DESKTOP} = $XDG_CURRENT_DESKTOP;
+
+my $XDG_ICON_THEME = $ENV{XDG_ICON_THEME};
+unless ($XDG_ICON_THEME) {
+    if (-f "$ENV{HOME}/.gtkrc-2.0") {
+	my @lines = (`cat $ENV{HOME}/.gtkrc-2.0`);
+	foreach (@lines) { chomp;
+	    if (m{gtk-icon-theme-name=["]?(.*[^"])["]?$}) {
+		$XDG_ICON_THEME = "$1";
+		last;
+	    }
+	}
+    } else {
+	$XDG_ICON_THEME = 'hicolor';
+    }
+}
+$ENV{XDG_ICON_THEME} = $XDG_ICON_THEME;
+
+if (my $filename = $XDG_APPLICATION_MENUS[0]) {
+    my $parser = new XDG::Menu::Parser;
+     #print STDERR "XDG_CURRENT_DESKTOP = ", $parser->{XDG_CURRENT_DESKTOP}, "\n";
+     #print STDERR "XDG_APPLICATIONS_DIRS = ", join(':',@{$parser->{XDG_APPLICATIONS_DIRS}}), "\n";
+     #print STDERR "XDG_DIRECTORY_DIRS = ", join(':',@{$parser->{XDG_DIRECTORY_DIRS}}), "\n";
+     #print STDERR "XDG_CONFIG_DIRS = ", join(':',@{$parser->{XDG_CONFIG_DIRS}}), "\n";
+     #print STDERR "XDG_MERGED_DIRS = ", join(':',@{$parser->{XDG_MERGED_DIRS}}), "\n";
+     #print STDERR "Parsing $filename ...\n";
+    my $tree = $parser->parse_menu($filename);
+    my $fluxbox = new XDG::Menu::Fluxbox;
+    print $fluxbox->create($tree), "\n";
+    my $blackbox = new XDG::Menu::Blackbox;
+    print $blackbox->create($tree), "\n";
+}
