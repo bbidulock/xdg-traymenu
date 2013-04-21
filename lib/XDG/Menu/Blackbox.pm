@@ -48,7 +48,44 @@ sub create {
 	my ($self,$item) = @_;
 	my $text = '';
 	$text .= sprintf "%s\n", '[begin] (Blackbox)';
+	$text .= "\n";
+	$text .= sprintf "%s\n", '  [exec] (File Manager) {pcmanfm}',
+	$text .= "\n";
+	$text .= sprintf "%s\n", '  [exec] (Web Browser) {firefox}',
+	$text .= "\n";
+	$text .= sprintf "%s\n", '  [exec] (Editor) {gvim}',
+	$text .= "\n";
+	$text .= sprintf "%s\n", '  [exec] (Terminal) {lxterminal}',
+	$text .= "\n";
+	$text .= sprintf "%s\n", '  [exec] (Run Command...) {bbrun -a -w}',
+	$text .= "\n";
+	$text .= sprintf "%s\n", '  [nop] (----------------------------) {}',
+	$text .= "\n";
 	$text .= $self->build($item,'  ');
+	$text .= "\n";
+	$text .= sprintf "%s\n", '  [nop] (----------------------------) {}',
+	$text .= "\n";
+	$text .= sprintf "%s\n", '  [workspaces] (Workspace List)';
+	$text .= sprintf "%s\n", '  [config] (Configuration)';
+	$text .= sprintf "%s\n", '  [submenu] (Styles) {Choose a style...}';
+	$text .= sprintf "%s\n", '    [stylesdir] (/usr/share/blackbox/styles)';
+	$text .= sprintf "%s\n", '    [stylesdir] (~/.blackbox/styles)';
+	$text .= sprintf "%s\n", '  [end]';
+	$text .= sprintf "%s\n", '  [submenu] (Window Managers)';
+	$text .= sprintf "%s\n", '    [restart] (Restart)';
+	$text .= sprintf "%s\n", '    [restart] (Start Afterstep) {afterstep}';
+	$text .= sprintf "%s\n", '    [restart] (Start Enlightenment) {enlightenment}';
+	$text .= sprintf "%s\n", '    [restart] (Start Fluxbox) {fluxbox}';
+	$text .= sprintf "%s\n", '    [restart] (Start FVWM) {fvwm}';
+	$text .= sprintf "%s\n", '    [restart] (Start KWM) {kwm}';
+	$text .= sprintf "%s\n", '    [restart] (Start Openbox) {openbox}';
+	$text .= sprintf "%s\n", '    [restart] (Start TWM) {twm}';
+	$text .= sprintf "%s\n", '    [restart] (Start WindowMaker) {wmaker}';
+	$text .= sprintf "%s\n", '  [end]';
+	$text .= sprintf "%s\n", '  [reconfig] (Reconfigure)';
+	$text .= "\n";
+	$text .= sprintf "%s\n", '  [nop] (----------------------------) {}',
+	$text .= "\n";
 	$text .= sprintf "%s\n", '  [exit] (Exit)';
 	$text .= sprintf "%s\n", '[end]';
 	return $text;
@@ -79,7 +116,7 @@ sub Header {
 }
 sub Separator {
 	my ($self,$item,$indent) = @_;
-	return sprintf "%s[separator]\n",
+	return sprintf "%s[nop] (----------------------------) {}\n\n",
 	       $indent;
 }
 sub Application {
@@ -89,11 +126,14 @@ sub Application {
 }
 sub Directory {
 	my ($self,$item,$indent) = @_;
+	my $menu = $item->{Menu};
 	my $text = '';
-	$text .= sprintf "%s[submenu] (%s) {%s}\n",
+	# no empty menus...
+	return $text unless @{$menu->{Elements}};
+	$text .= sprintf "\n%s[submenu] (%s) {%s}\n",
 		$indent, $item->Name, $item->Name." Menu";
-	$text .= $self->build($item->{Menu},$indent.'  ');
-	$text .= sprintf "%s[end]\n",
+	$text .= $self->build($menu,$indent.'  ');
+	$text .= sprintf "%s[end]\n\n",
 		$indent;
 	return $text;
 }

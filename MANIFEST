@@ -9,10 +9,13 @@ MYMETA.yml
 lib/XDG/Menu.pm
 lib/XDG/IconData.pm
 lib/XDG/IconTheme.pm
-lib/XDG/Menu/Wmaker.pm
 lib/XDG/Menu/Blackbox.pm
+lib/XDG/Menu/Fluxbox.pm
+lib/XDG/Menu/Icewm.pm
+lib/XDG/Menu/Openbox3.pm
+lib/XDG/Menu/Openbox.pm
 lib/XDG/Menu/Parser.pm
 lib/XDG/Menu/Traymenu.pm
-lib/XDG/Menu/Openbox.pm
-lib/XDG/Menu/Fluxbox.pm
+lib/XDG/Menu/Wmaker.pm
+lib/XDG/Menu/Wmaker.pm
 lib/XDG/Icons.pm

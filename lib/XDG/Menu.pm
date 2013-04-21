@@ -126,7 +126,8 @@ sub Icon {
 	# need to go look for it
 	$icons = XDG::Icons->new() unless $icons;
 	my $name = $icon; $name =~ s{\.(png|xpm|svg)$}{};
-	my $fn = $icons->FindBestIcon([$name,'exec'],16,$exts);
+	my $fn = $icons->FindIcon($name,16,$exts);
+	$fn = $icons->FindIcon('exec',16,$exts) unless $fn;
 	return $fn if $fn;
 	return '';
     }
