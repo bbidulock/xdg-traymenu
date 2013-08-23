@@ -9,7 +9,7 @@ use warnings;
 =head1 SYNOPSIS
 
  my $parser = new XDG::Menu::Parser;
- my $tree = $parser->parse_uri('/etc/xdg/menus/applications.menu');
+ my $tree = $parser->parse_menu('/etc/xdg/menus/applications.menu');
  my $blackbox = new XDG::Menu::Blackbox;
  print $blackbox->create($tree);
 
@@ -48,18 +48,6 @@ sub create {
 	my ($self,$item) = @_;
 	my $text = '';
 	$text .= sprintf "%s\n", '[begin] (Blackbox)';
-	$text .= "\n";
-	$text .= sprintf "%s\n", '  [exec] (File Manager) {pcmanfm}',
-	$text .= "\n";
-	$text .= sprintf "%s\n", '  [exec] (Web Browser) {firefox}',
-	$text .= "\n";
-	$text .= sprintf "%s\n", '  [exec] (Editor) {gvim}',
-	$text .= "\n";
-	$text .= sprintf "%s\n", '  [exec] (Terminal) {lxterminal}',
-	$text .= "\n";
-	$text .= sprintf "%s\n", '  [exec] (Run Command...) {bbrun -a -w}',
-	$text .= "\n";
-	$text .= sprintf "%s\n", '  [nop] (----------------------------) {}',
 	$text .= "\n";
 	$text .= $self->build($item,'  ');
 	$text .= "\n";
@@ -111,18 +99,20 @@ sub Menu {
 }
 sub Header {
 	my ($self,$item,$indent) = @_;
-	return sprintf "%s[nop] (%s)\n",
-	       $indent, $item->Name;
+	my $name = $item->Name; $name =~ s/[)]/\\)/g;
+	return sprintf "\n%s[nop] (%s)\n\n",
+	       $indent, $name;
 }
 sub Separator {
 	my ($self,$item,$indent) = @_;
-	return sprintf "%s[nop] (----------------------------) {}\n\n",
+	return sprintf "\n%s[nop] (----------------------------) {}\n\n",
 	       $indent;
 }
 sub Application {
 	my ($self,$item,$indent) = @_;
-	return sprintf "%s[exec] (%s) {%s}\n",
-	       $indent, $item->Name, $item->Exec;
+	my $name = $item->Name; $name =~ s/[)]/\\)/g;
+	return sprintf "\n%s[exec] (%s) {%s}\n\n",
+	       $indent, $name, $item->Exec;
 }
 sub Directory {
 	my ($self,$item,$indent) = @_;
@@ -130,8 +120,9 @@ sub Directory {
 	my $text = '';
 	# no empty menus...
 	return $text unless @{$menu->{Elements}};
+	my $name = $item->Name; $name =~ s/[)]/\\)/g;
 	$text .= sprintf "\n%s[submenu] (%s) {%s}\n",
-		$indent, $item->Name, $item->Name." Menu";
+		$indent, $name, $item->Name." Menu";
 	$text .= $self->build($menu,$indent.'  ');
 	$text .= sprintf "%s[end]\n\n",
 		$indent;

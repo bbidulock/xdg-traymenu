@@ -1,5 +1,25 @@
 #!/usr/bin/perl
 
+=head1 NAME
+
+ xdg-menugen -- generate XDG compliant menus
+
+=head1 SYNOPSIS
+
+ xdg-menugen [ OPTIONS ]
+
+=head1 DESCRIPTION
+
+B<xdg-menugen> is a command-line program that can be used to generate a
+XDG compliant menu in a number of formats to support configuration of
+the root menu for light-weight window managers.
+
+B<xdg-menugen> is capable of generating either a complete menu for a
+number of well-known window managers, or for generating a submenu that
+can be included in the root menu of those window managers.
+
+=cut
+
 my $here = $0; $here =~ s{/[^/]*$}{};
 unshift @INC, "$here/lib";
 
@@ -107,6 +127,95 @@ my %desktops = (
     ICEWM       => [qw(icewm    XDG::Menu::Icewm    )],
 );
 
+=head1 OPTIONS
+
+=over
+
+=item B<--help>,B<-h>
+
+Print usage information, including the current values of option
+defaults, and exit.
+
+=item B<--verbose>,B<-v>
+
+Print debugging information on standard error during operation.
+
+=item B<--format>,B<-f> I<FORMAT>
+
+Specify the output format.  Recognized output formats are as follows:
+C<twm>, C<wmaker>, C<fvwm2>, C<ion3>, C<blackbox>, C<fluxbox>,
+C<openbox>, C<xfce4>, C<openbox3>, C<openbox3-pipe>, C<awesome>.
+
+When unspecified, the setting of the B<XDG_CURRENT_DESKTOP> environment
+variable is used to determine the format.  This is accomplished by
+converting the value of B<XDG_CURRENT_DESKTOP> to  lower-case.  See
+L</ENVIRONMENT>.
+
+=item B<--fullmenu>,B<-F>
+
+When specified, output a full menu and not only a submenu.  The default
+behaviour is to only output a submenu.
+
+=item B<--desktop>,B<-d> I<DESKTOP>
+
+Specify the desktop name for C<NotShowIn> and C<OnlyShowIn> comparisons.
+The default is the all upper-case value corresponding to the format
+unless C<XDG_CURRENT_DESKTOP> is defined (see L</ENVIRONMENT>).
+
+=item B<--charset>,B<-c> I<CHARSET>
+
+Specify the character set with which to output the menu.  Defaults to
+the character set in use by the current locale.
+
+=item B<--language>,B<-l> I<LANGUAGE>
+
+Specify the output language for the menu.  Defaults to the language set
+in the current locale.
+
+=item B<--root-menu>,B<-r> I<MENU>
+
+Specify the location of the root menu file.  The default is calculated
+using XDG environment variables (see L</ENVIRONMENT>), and defaults to
+the file F<${XDG_MENU_PREFIX}applications.menu> in the
+F<$XDG_CONFIG_HOME:$XDG_CONFIG_DIRS> search path.
+
+=item B<--die-on-error>,B<-e>
+
+Abort execution on any error.
+
+=item B<--output>,B<-o> [I<FILENAME>]
+
+Write output to the file, I<FILENAME>, instead of to standard output.
+This is particularly useful with option B<-die-on-error> as the output
+will not be written at all if an error is encountered.  If the
+I<FILENAME> is not specified, the default menu location for the
+current B<-format> will be used.
+
+=item B<--noicons>,B<-n>
+
+Do not include icons in the generated menu files.  This option has no
+effect when it is not possible to generate icons for the menu format.
+That is, when the B<-format> is one such as C<blackbox>, it is not
+possible to place icons in the menu and this option is therefore
+ignored.  The default is to place icons in capable generated menus.
+
+=item B<--theme>,B<-t> THEME
+
+Specify the icon theme name to use when generating icons.  The default
+is to obtain the icon theme name from default locations (such as the
+F<$HOME/.gtkrc-2.0> file).
+
+=item B<--monitor>,B<-m>
+
+Specifies that B<xdg-menugen> is not to exit after successfully
+generating the menu, but to monitor pertinent directories for changes,
+and regenerate the menu when changes are detected.  This option implies
+the B<--output> option.  This option requires L<Linux::Inotify2(3pm)>.
+
+=back
+
+=cut
+
 my %ops = (
     help        => '',
     format      => "\L$XDG_CURRENT_DESKTOP\E",
@@ -210,9 +319,8 @@ else {
     usage(2);
 }
 
-$ops{lang} = "\L$ops{language}\E";
+$ops{lang} = $ops{language};
 $ops{lang} =~ s/\..*$//;
-$ops{lang} = "[$ops{lang}]";
 
 if ($ops{verbose}) {
     print STDERR "\tRoot menu: $ops{root_menu}\n";
@@ -235,12 +343,12 @@ exit (0);
 sub usage {
     my $retval = shift;
     print STDERR<<EOF;
-usage:
+USAGE:
     xdg-menugen [OPTIONS]
 
-options:
+OPTIONS:
     --help,-h
-        print this usage info an exit
+        print this usage info and exit
 
     --format,-f FORMAT      [default: $ops{format}]
         specify the output format to use; defaults to the lowercase
@@ -293,112 +401,6 @@ options:
 EOF
     exit($retval);
 }
-
-
-=head1 NAME
-
- xdg-menugen -- generate XDG compliant menus
-
-=head1 SYNOPSIS
-
- xdg-menugen [ OPTIONS ]
-
-=head1 DESCRIPTION
-
-B<xdg-menugen> is a command-line program that can be used to generate a
-XDG compliant menu in a number of formats to support configuration of
-the root menu for light-weight window managers.
-
-B<xdg-menugen> is capable of generating either a complete menu for a
-number of well-known window managers, or for generating a submenu that
-can be included in the root menu of those window managers.
-
-=head1 OPTIONS
-
-=over
-
-=item B<--help>,B<-h>
-
-Print usage information, including the current values of option
-defaults, and exit.
-
-=item B<--verbose>,B<-v>
-
-Print debugging information on standard error during operation.
-
-=item B<--format>,B<-f> I<FORMAT>
-
-Specify the output format.  Recognized output formats are as follows:
-C<twm>, C<wmaker>, C<fvwm2>, C<ion3>, C<blackbox>, C<fluxbox>,
-C<openbox>, C<xfce4>, C<openbox3>, C<openbox3-pipe>, C<awesome>.
-
-When unspecified, the setting of the B<XDG_CURRENT_DESKTOP> environment
-variable is used to determine the format.  This is accomplished by
-converting the value of B<XDG_CURRENT_DESKTOP> to  lower-case.  See
-L</ENVIRONMENT>.
-
-=item B<--fullmenu>,B<-F>
-
-When specified, output a full menu and not only a submenu.  The default
-behaviour is to only output a submenu.
-
-=item B<--desktop>,B<-d> I<DESKTOP>
-
-Specify the desktop name for C<NotShowIn> and C<OnlyShowIn> comparisons.
-The default is the all upper-case value corresponding to the format
-unless C<XDG_CURRENT_DESKTOP> is defined (see L</ENVIRONMENT>).
-
-=item B<--charset>,B<-c> I<CHARSET>
-
-Specify the character set with which to output the menu.  Defaults to
-the character set in use by the current locale.
-
-=item B<--language>,B<-l> I<LANGUAGE>
-
-Specify the output language for the menu.  Defaults to the language set
-in the current locale.
-
-=item B<--root-menu>,B<-r> I<MENU>
-
-Specify the location of the root menu file.  The default is calculated
-using XDG environment variables (see L</ENVIRONMENT>), and defaults to
-the file F<${XDG_MENU_PREFIX}applications.menu> in the
-F<$XDG_CONFIG_HOME:$XDG_CONFIG_DIRS> search path.
-
-=item B<--die-on-error>,B<-e>
-
-Abort execution on any error.
-
-=item B<--output>,B<-o> [I<FILENAME>]
-
-Write output to the file, I<FILENAME>, instead of to standard output.
-This is particularly useful with option B<-die-on-error> as the output
-will not be written at all if an error is encountered.  If the
-I<FILENAME> is not specified, the default menu location for the
-current B<-format> will be used.
-
-=item B<--noicons>,B<-n>
-
-Do not include icons in the generated menu files.  This option has no
-effect when it is not possible to generate icons for the menu format.
-That is, when the B<-format> is one such as C<blackbox>, it is not
-possible to place icons in the menu and this option is therefore
-ignored.  The default is to place icons in capable generated menus.
-
-=item B<--theme>,B<-t> THEME
-
-Specify the icon theme name to use when generating icons.  The default
-is to obtain the icon theme name from default locations (such as the
-F<$HOME/.gtkrc-2.0> file).
-
-=item B<--monitor>,B<-m>
-
-Specifies that B<xdg-menugen> is not to exit after successfully
-generating the menu, but to monitor pertinent directories for changes,
-and regenerate the menu when changes are detected.  This option implies
-the B<--output> option.  This option requires L<Linux::Inotify2(3pm)>.
-
-=back
 
 =head1 ENVIRONMENT
 

@@ -89,8 +89,9 @@ sub Menu {
 }
 sub Header {
     my ($self,$item,$indent) = @_;
+    my $name = $item->Name; $name =~ s/[)]/\\)/g;
     return sprintf "%s[nop] (%s) <%s>\n",
-       $indent, $item->Name, $item->Icon([qw(png svg xpm)]);
+       $indent, $name, $item->Icon([qw(png svg xpm)]);
 }
 sub Separator {
     my ($self,$item,$indent) = @_;
@@ -99,19 +100,21 @@ sub Separator {
 }
 sub Application {
     my ($self,$item,$indent) = @_;
+    my $name = $item->Name; $name =~ s/[)]/\\)/g;
     return sprintf "%s[exec] (%s) {%s} <%s>\n",
-        $indent, $item->Name, $item->Exec,
+        $indent, $name, $item->Exec,
         $item->Icon([qw(png svg xpm)]);
 }
 sub Directory {
     my ($self,$item,$indent) = @_;
     my $text = '';
+    my $name = $item->Name; $name =~ s/[)]/\\)/g;
     $text .= sprintf "%s[submenu] (%s) {%s} <%s>\n",
-        $indent, $item->Name, $item->Name." Menu",
+        $indent, $name, $item->Name." Menu",
         $item->Icon([qw(png svg xpm)]);
     $text .= $self->build($item->{Menu},$indent.'  ');
     $text .= sprintf "%s[end] # (%s)\n",
-        $indent, $item->Name;
+        $indent, $name;
     return $text;
 }
 

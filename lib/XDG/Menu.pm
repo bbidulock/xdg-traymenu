@@ -90,6 +90,14 @@ use warnings;
 
 my $icons;
 
+sub get_icons {
+    my $self = shift;
+    $icons = XDG::Icons->new({
+	Append => '/usr/share/WindowMaker/Icons',
+    }) unless $icons;
+    return $icons;
+}
+
 sub new {
     my $self = bless {}, shift;
     my $file = shift;
@@ -124,7 +132,7 @@ sub Icon {
     return '' unless $icon;
     unless ($icon =~ m{/}) {
 	# need to go look for it
-	$icons = XDG::Icons->new() unless $icons;
+	my $icons = $self->get_icons;
 	my $name = $icon; $name =~ s{\.(png|xpm|svg)$}{};
 	my $fn = $icons->FindIcon($name,16,$exts);
 	$fn = $icons->FindIcon('exec',16,$exts) unless $fn;
