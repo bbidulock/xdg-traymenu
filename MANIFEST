@@ -4,8 +4,6 @@ MANIFEST.SKIP
 xdg-icon
 xdg-traymenu
 xdg-menugen
-MYMETA.json
-MYMETA.yml
 lib/XDG/IconData.pm
 lib/XDG/Icons.pm
 lib/XDG/IconTheme.pm
