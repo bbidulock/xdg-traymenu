@@ -1,5 +1,7 @@
 #!/usr/bin/perl
 
+binmode STDOUT, "encoding(UTF-8)";
+
 # in case we get executed (not sourced) as a shell program
 eval 'exec perl -S $0 ${1+"@"}'
     if $running_under_some_shell;
@@ -16,9 +18,11 @@ BEGIN {
     unshift @INC, "$here/lib" unless $here =~ m{^/usr/bin};
 }
 
+=encoding UTF-8
+
 =head1 NAME
 
- xdg-menugen -- generate XDG compliant menus
+xdg-menugen -- generate XDG compliant menus
 
 =head1 SYNOPSIS
 
