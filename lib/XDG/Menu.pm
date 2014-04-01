@@ -1,5 +1,4 @@
-require XDG::Icons;
-
+use XDG::Icons;
 
 
 package XDG::Menu::Layout::Item;
@@ -64,9 +63,28 @@ sub new {
 	Name =>	    $app->{Name},
     }, $type;
 }
+sub Id {
+    my $self = shift;
+    my $file = $self->{Entry}->{file};
+    $file =~ s{^.*/}{};
+    $file =~ s{\.desktop$}{};
+    return $file;
+}
 sub Exec {
     my $self = shift;
     return $self->{Entry}->Exec;
+}
+sub StartupNotify {
+    my $self = shift;
+    my $entry = $self->{Entry};
+    if ($entry->{StartupNotify} and $entry->{StartupNotify} =~ /yes|true/i) {
+	return 'yes';
+    }
+    return 'no';
+}
+sub StartupWMClass {
+    my $self = shift;
+    return $self->{Entry}->{StartupWMClass};
 }
 
 package XDG::Menu::Layout::Directory;
@@ -85,6 +103,7 @@ sub new {
 }
 
 package XDG::Menu::DesktopEntry;
+use Carp qw(cluck croak confess);
 use strict;
 use warnings;
 
@@ -95,6 +114,7 @@ sub get_icons {
     $icons = XDG::Icons->new({
 	Append => '/usr/share/WindowMaker/Icons',
     }) unless $icons;
+    confess "no icons" unless defined $icons;
     return $icons;
 }
 
@@ -129,17 +149,21 @@ sub new {
 sub Icon {
     my ($self,$exts) = @_;
     my $icon = $self->{Icon};
-    return '' unless $icon;
-    unless ($icon =~ m{/}) {
-	# need to go look for it
-	my $icons = $self->get_icons;
-	my $name = $icon; $name =~ s{\.(png|xpm|svg)$}{};
-	my $fn = $icons->FindIcon($name,16,$exts);
-	$fn = $icons->FindIcon('exec',16,$exts) unless $fn;
-	return $fn if $fn;
-	return '';
+    $icon = '' unless $icon;
+    $exts = ['xpm'] unless $exts and @$exts;
+    if ($icon =~ m{/} and -f $icon) {
+	foreach (@$exts) {
+	    return $icon if $icon =~ m{\.$_$};
+	}
     }
-    return $icon if -f $icon;
+    my $name = $icon;
+    $name =~ s{^.*/}{};
+    $name =~ s/\.[a-z]{3,4}$//;
+    if (my $icons = $self->get_icons) {
+	$icon = $icons->FindIcon($name,16,$exts) if $name;
+	$icon = $icons->FindIcon('exec',16,$exts) unless $icon;
+	return $icon if $icon;
+    }
     return '';
 }
 

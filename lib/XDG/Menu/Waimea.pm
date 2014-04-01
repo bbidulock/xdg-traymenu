@@ -1,33 +1,33 @@
-package XDG::Menu::Blackbox;
+package XDG::Menu::Waimea;
 use base qw(XDG::Menu::Base);
 use strict;
 use warnings;
 
 =head1 NAME
 
-XDG::Menu::Blackbox - generate a Blackbox menu from an XDG::Menu tree.
+XDG::Menu::Waimea - generate a Waimea menu from an XDG::Menu tree.
 
 =head1 SYNOPSIS
 
  my $parser = new XDG::Menu::Parser;
  my $tree = $parser->parse_menu('/etc/xdg/menus/applications.menu');
- my $blackbox = new XDG::Menu::Blackbox;
- print $blackbox->create($tree);
+ my $waimea = new XDG::Menu::Waimea;
+ print $waimea->create($tree);
 
 =head1 DESCRIPTION
 
-B<XDG::Menu::Blackbox> is a module that reads an XDG::Menu::Layout tree
-and generates a blackbox style menu.
+B<XDG::Menu::Waimea> is a module that reads an XDG::Menu::Layout tree
+and generates a waimea style menu.
 
 =head1 METHODS
 
-B<XDG::Menu::Blackbox> has the following methods:
+B<XDG::Menu::Waimea> has the following methods:
 
 =over
 
-=item $blackbox->B<create>(I<$tree>,I<$style>,I<$name>) => I<$menu>
+=item $waimea->B<create>(I<$tree>,I<$style>,I<$name>) => I<$menu>
 
-Creates a L<blackbox(1)> menu from menu tree, C<$tree>, and returns the
+Creates a L<waimea(1)> menu from menu tree, C<$tree>, and returns the
 menu in a scalar string, I<$menu>.  C<$tree> must have been created as
 the result of parsing the XDG menu using XDG::Menu::Parser (see
 L<XDG::Menu(3pm)>).
@@ -100,7 +100,7 @@ sub wmmenu {
 	my $wm = $wms->{$_};
 	my $name = $wm->{Name};
 	$name = $_ unless $name;
-	next if "\L$name\E" eq "blackbox";
+	next if "\L$name\E" eq "waimea";
 	my $exec = $wm->{Exec};
 	$text .= sprintf("    [restart] (Start %s) {%s}\n",$name,$exec);
     }
@@ -119,11 +119,11 @@ sub appmenu {
 sub rootmenu {
 	my ($self,$entries) = @_;
 	my $text = '';
-	$text .= sprintf "%s\n", '[begin] (Blackbox)';
+	$text .= sprintf "%s\n", '[start] (rootmenu)';
 	$text .= "\n";
 	$text .= $entries;
 	$text .= "\n";
-	$text .= sprintf "%s\n", '  [nop] (————————————) {}',
+	$text .= sprintf "%s\n", '  [nop] (------------) {}',
 	$text .= "\n";
 	$text .= sprintf "%s\n", '  [workspaces] (Workspace List)';
 	$text .= sprintf "%s\n", '  [config] (Configuration)';
@@ -135,7 +135,7 @@ sub rootmenu {
 	$text .= $self->wmmenu();
 	$text .= sprintf "%s\n", '  [reconfig] (Reconfigure)';
 	$text .= "\n";
-	$text .= sprintf "%s\n", '  [nop] (————————————) {}',
+	$text .= sprintf "%s\n", '  [nop] (------------) {}',
 	$text .= "\n";
 	$text .= sprintf "%s\n", '  [exit] (Exit)';
 	$text .= sprintf "%s\n", '[end]';
@@ -167,7 +167,7 @@ sub Header {
 }
 sub Separator {
 	my ($self,$item,$indent) = @_;
-	return sprintf "\n%s[nop] (————————————) {}\n\n",
+	return sprintf "\n%s[nop] (------------) {}\n\n",
 	       $indent;
 }
 sub Application {
@@ -194,6 +194,54 @@ sub Directory {
 	$text .= sprintf "%s[end]\n\n",
 		$indent;
 	return $text;
+}
+
+sub styles {
+    my ($self,$indent) = @_;
+    my $base = '/usr/share/waimea';
+    my @sstyles = ();
+    my $sdir = "$base/styles";
+    if (opendir (my $fh, $sdir)) {
+	foreach my $f (readdir($fh)) {
+	    next if $f eq '.' or $f eq '..';
+	    if (-f "$sdir/$f") {
+		push @sstyles, $f;
+	    } elsif (-f "$sdir/$f/stylerc") {
+		push @sstyles, "$f/stylerc";
+	    }
+	}
+    }
+    my @ustyles = ();
+    my $udir = "$ENV{HOME}/.waimea/styles";
+    if (opendir (my $fh, $udir)) {
+	foreach my $f (readdir($fh)) {
+	    next if $f eq '.' or $f eq '..';
+	    if (-f "$udir/$f") {
+		push @ustyles, $f;
+	    } elsif (-f "$udir/$f/stylerc") {
+		push @ustyles, "$f/style";
+	    }
+	}
+    }
+    my $conf = $ENV{XDG_CONFIG_HOME};
+    $conf = "$ENV{HOME}/.config" unless $conf;
+    my @xstyles = ();
+    my $xdir = "$conf/waimea/styles";
+    if (opendir (my $fh, $xdir)) {
+	foreach my $f (readdir($fh)) {
+	    next if $f eq '.' or $f eq '..';
+	    if (-f "$xdir/$f") {
+		push @xstyles, $f;
+	    }
+	    elsif (-f "$xdir/$f/stylerc") {
+		push @xstyles, "$f/style";
+	    }
+	}
+    }
+    my $text = '';
+    if (@sstyles or @ustyles) {
+    }
+    return $text;
 }
 
 1;

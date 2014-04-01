@@ -1,5 +1,21 @@
 #!/usr/bin/perl
 
+# in case we get executed (not sourced) as a shell program
+eval 'exec perl -S $0 ${1+"@"}'
+    if $running_under_some_shell;
+
+BEGIN {
+    use strict;
+    use warnings;
+    my $here = $0; $here =~ s{/[^/]*$}{};
+    if ($here =~ s{^\.}{}) {
+	chomp(my $cwd = `pwd`);
+	$here = "/$here" if $here;
+	$here = "$cwd$here";
+    }
+    unshift @INC, "$here/lib" unless $here =~ m{^/usr/bin};
+}
+
 =head1 NAME
 
  xdg-traymenu - an XDG compliant system tray menu
@@ -16,23 +32,45 @@ specific menus for a number of window-managers.
 
 =cut
 
-my $here = $0; $here =~ s{/[^/]*$}{};
-unshift @INC, "$here/lib";
-
 use Getopt::Long;
 use Encode;
 use I18N::Langinfo qw(langinfo CODESET);
 use POSIX qw(locale_h);
 use Glib qw(TRUE FALSE);
 use Gtk2;
+use Gtk2::Unique;
 use strict;
 use warnings;
 
-if ($here ne '/usr/bin') {
-	Gtk2::Rc->set_default_files("$here/themes/Unexicon/gtk-2.0/gtkrc", "$here/gtkrc-2.0");
-} else {
-	Gtk2::Rc->set_default_files("$ENV{HOME}/.gtkrc-2.0.mine");
+my %OVERRIDES = ();
+my $here = $0; $here =~ s{/[^/]*$}{};
+if ($here =~ s{^\.}{}) {
+    chomp(my $cwd = `pwd`);
+    $here = "/$here" if $here;
+    $here = "$cwd$here";
 }
+unless ($here =~ m{^/usr/bin}) {
+    %OVERRIDES = (
+	HERE               => "$here",
+	XDG_CONFIG_PREPEND => "$here/xdg/xde:$here/xdg:/etc/xdg/xde",
+	XDG_DATA_PREPEND   => "$here/share/xde:$here/share:/usr/share/xde",
+	XDG_ICON_APPEND    => "$here/share/icons:$here/share/pixmaps:/usr/share/icons:/usr/share/pixmaps",
+    );
+    my %path = (map{$_=>1}split(/:/,$ENV{PATH}));
+    $ENV{PATH} = "$here:$ENV{PATH}" unless exists $path{$here};
+}
+
+my $program = $0; $program =~ s{^.*/}{};
+
+Gtk2::Rc->set_default_files("$ENV{HOME}/.gtkrc-2.0.xde");
+
+#if ($here !~ m{^/usr/bin}) {
+#	Gtk2::Rc->set_default_files("$here/themes/Unexicon/gtk-2.0/gtkrc", "$here/gtkrc-2.0");
+#} else {
+#	Gtk2::Rc->set_default_files("$ENV{HOME}/.gtkrc-2.0.mine");
+#}
+#
+#Gtk2::Rc->parse_string('gtk-theme-name="Squared-blue"'."\n");
 
 Gtk2->init;
 
@@ -107,28 +145,56 @@ my $XDG_ICON_DIRS = join(':',"$HOME/.icons",map{"$_/icons"}@XDG_DATA_DIRS,'/usr/
 my @XDG_ICON_DIRS = split(/:/,$XDG_ICON_DIRS);
 
 my %outputs = (
-    fluxbox     => [ "$HOME/.fluxbox/menu" ],
-    blackbox    => [ "$HOME/.blackbox/menu", "$HOME/.bbmenu" ],
-    openbox     => [ "$HOME/.openbox/menu", "$HOME/.config/openbox/menu" ],
-    icewm       => [ "$HOME/.icewm/menu" ],
+    fluxbox	=> [ "$HOME/.fluxbox/menu" ],
+    blackbox	=> [ "$HOME/.blackbox/menu", "$HOME/.bbmenu" ],
+    openbox	=> [ "$HOME/.openbox/menu", "$HOME/.config/openbox/menu" ],
+    icewm	=> [ "$HOME/.icewm/menu" ],
+    pekwm	=> [ "$HOME/.pekwm/menu" ],
+    jwm		=> [ "$HOME/.jwm/menu" ],
+    fvwm	=> [ "$HOME/.fvwm/menu" ],
+    wmaker	=> [ "$HOME/GNUstep/Defaults/WMRootMenu" ],
+    ctwm	=> [ "$HOME/.ctwm/menu" ],
+    vtwm	=> [ "$HOME/.vtwm/menu" ],
+    twm		=> [ "$HOME/.twm/menu" ],
+    echinus	=> [ "$HOME/.echinus/menu" ],
+    awesome	=> [ "$HOME/.awesome/menu" ],
+    adwm	=> [ "$HOME/.adwm/menu" ],
 );
 
 my %formats = (
-    fluxbox     => [qw(FLUXBOX  XDG::Menu::Tray	)],
-    blackbox    => [qw(BLACKBOX XDG::Menu::Tray )],
-    openbox     => [qw(OPENBOX  XDG::Menu::Tray	)],
-    icewm       => [qw(ICEWM    XDG::Menu::Tray	)],
-    openbox3    => [qw(LXDE     XDG::Menu::Tray )],
-    wmaker      => [qw(WMAKER   XDG::Menu::Tray	)],
+    fluxbox	=> [qw(FLUXBOX	XDG::Menu::Tray	)],
+    blackbox	=> [qw(BLACKBOX	XDG::Menu::Tray	)],
+    openbox	=> [qw(OPENBOX	XDG::Menu::Tray	)],
+    openbox3	=> [qw(LXDE	XDG::Menu::Tray	)],
+    icewm	=> [qw(ICEWM	XDG::Menu::Tray	)],
+    pekwm	=> [qw(PEKWM	XDG::Menu::Tray	)],
+    jwm		=> [qw(JWM	XDG::Menu::Tray	)],
+    fvwm	=> [qw(FVWM	XDG::Menu::Tray	)],
+    wmaker	=> [qw(WMAKER	XDG::Menu::Tray	)],
+    ctwm	=> [qw(CTWM	XDG::Menu::Tray	)],
+    vtwm	=> [qw(VTWM	XDG::Menu::Tray	)],
+    twm		=> [qw(TWM	XDG::Menu::Tray	)],
+    echinus	=> [qw(ECHINUS	XDG::Menu::Tray )],
+    awesome	=> [qw(AWESOME	XDG::Menu::Tray )],
+    adwm	=> [qw(ADWM	XDG::Menu::Tray )],
 );
 
 my %desktops = (
-    FLUXBOX     => [qw(fluxbox  XDG::Menu::Tray	)],
-    BLACKBOX    => [qw(blackbox XDG::Menu::Tray	)],
-    WMAKER      => [qw(wmaker   XDG::Menu::Tray	)],
-    OPENBOX     => [qw(openbox  XDG::Menu::Tray	)],
-    LXDE        => [qw(openbox3 XDG::Menu::Tray )],
-    ICEWM       => [qw(icewm    XDG::Menu::Tray	)],
+    FLUXBOX	=> [qw(fluxbox  XDG::Menu::Tray	)],
+    BLACKBOX	=> [qw(blackbox XDG::Menu::Tray	)],
+    OPENBOX	=> [qw(openbox  XDG::Menu::Tray	)],
+    ICEWM	=> [qw(icewm    XDG::Menu::Tray	)],
+    PEKWM	=> [qw(pekwm    XDG::Menu::Tray	)],
+    JWM		=> [qw(jwm      XDG::Menu::Tray	)],
+    FVWM	=> [qw(fvwm	XDG::Menu::Tray	)],
+    WMAKER	=> [qw(wmaker   XDG::Menu::Tray	)],
+    CTWM	=> [qw(ctwm	XDG::Menu::Tray	)],
+    VTWM	=> [qw(vtwm	XDG::Menu::Tray	)],
+    TWM		=> [qw(twm	XDG::Menu::Tray	)],
+    ECHINUS	=> [qw(echinus	XDG::Menu::Tray )],
+    AWESOME	=> [qw(awesome	XDG::Menu::Tray )],
+    LXDE	=> [qw(openbox3 XDG::Menu::Tray	)],
+    ADWM	=> [qw(adwm	XDG::Menu::Tray )],
 );
 
 
@@ -152,7 +218,7 @@ Print debugging information on standard error during operation.
 Specify the output format.  Recognized output formats are as follows:
 C<twm>, C<wmaker>, C<windowmaker>, C<fvwm>, C<fvwm2>, C<fvwm-crystal>,
 C<ion3>, C<blackbox>, C<fluxbox>, C<openbox>, C<xfce4>, C<openbox3>,
-C<openbox3-pipe>, C<awesome>, C<icewm>.
+C<openbox3-pipe>, C<awesome>, C<icewm>, C<jwm>, C<pekwm>.
 
 When unspecified, the setting of the B<XDG_CURRENT_DESKTOP> environment
 variable is used to determine the format.  This is accomplished by
@@ -193,7 +259,7 @@ F<$XDG_CONFIG_HOME:$XDG_CONFIG_DIRS> search path.
 
 =item B<--die-on-error>, B<-e>
 
-Abort output on any error.
+Abort execution on any error.
 
 =item B<--output>, B<-o> [I<FILENAME>]
 
@@ -210,6 +276,12 @@ That is, when the B<--format> is one such as C<blackbox>, it is not
 possible to place icons in the menu and this option is therefore
 ignored.  The default is to place icons in capable generated menus.
 
+=item B<--theme>, B<-t> THEME
+
+Specify the icon theme name to use when generating icons.  The default
+is to obtain the icon theme name from default locations (such as the
+F<$HOME/.gtkrc-2.0> file).
+
 =item B<--monitor>, B<-m>
 
 Specifies that B<xdg-traymenu> is not to exit after successfully
@@ -221,9 +293,10 @@ the B<--output> option.  This option requires L<Linux::Inotify2(3pm)>.
 
 =cut
 
+my (@SAVEARGS) = (@ARGV);
+
 my %ops = (
     help	=> '',
-    verbose	=> '',
     format	=> "\L$XDG_CURRENT_DESKTOP\E",
     fullmenu	=> '',
     desktop	=> "\U$XDG_CURRENT_DESKTOP\E",
@@ -231,16 +304,19 @@ my %ops = (
     language	=> setlocale(LC_MESSAGES),
     root_menu	=> $XDG_ROOT_MENU,
     die_on_error=> '',
+    verbose	=> '',
     output	=> '',
     icons	=> '',
     noicons	=> '',
     theme	=> $XDG_ICON_THEME,
     monitor	=> '',
+    button	=> 3,
+    timestamp	=> 0,
+    popup	=> '',
 );
 
 my $syntax = GetOptions(
     "help|h"	    =>\$ops{help},
-    "verbose|v"	    =>\$ops{verbose},
     "format|f=s"    =>\$ops{format},
     "fullmenu|F!"   =>\$ops{fullmenu},
     "N"		    =>sub{$ops{fullmenu}=0},
@@ -249,11 +325,15 @@ my $syntax = GetOptions(
     "language|l=s"  =>\$ops{language},
     "root-menu|r=s" =>\$ops{root_menu},
     "die-on-error|e"=>\$ops{die_on_error},
+    "verbose|v"	    =>\$ops{verbose},
     "output|o:s"    =>\$ops{output},
     "icons!"	    =>\$ops{icons},
     "n"		    =>sub{$ops{icons}=0},
     "theme|t=s"	    =>\$ops{theme},
     "monitor|m"	    =>\$ops{monitor},
+    "timestamp|T=i" =>\$ops{timestamp},
+    "button|b=i"    =>\$ops{button},
+    "popup|p"	    =>\$ops{popup},
 );
 
 if ($ops{output} eq '') {
@@ -404,7 +484,57 @@ EOF
     exit($retval);
 }
 
-my $style = Gtk2::RcStyle->new;
+$program = 'xdg-traymenu-popup' if $ops{popup};
+
+my $DESKTOP_STARTUP_ID = delete $ENV{DESKTOP_STARTUP_ID};
+my $unique = Gtk2::UniqueApp->new(
+	'com.unexicon.xdg-traymenu', $DESKTOP_STARTUP_ID,
+	'xdg-traymenu' => 1,
+	'xdg-traymenu-popup' => 2);
+if ($unique->is_running) {
+    if ($program eq 'xdg-traymenu') {
+	$unique->send_message_by_name($program=>text=>join('|',@SAVEARGS));
+	print STDERR "Another instance of $program is already running.\n";
+    } elsif ($program eq 'xdg-traymenu-popup') {
+	$unique->send_message_by_name($program=>text=>join(',',$ops{button},$ops{timestamp}));
+    }
+    exit(0);
+}
+
+my $menu;
+
+my $window = Gtk2::Window->new('toplevel');
+$unique->watch_window($window);
+$unique->signal_connect(message_received=>sub{
+	my ($unique,$command,$message,$time) = @_;
+	if ($command eq 'xdg-traymenu') {
+	    if ($ops{verbose}) {
+		print STDERR "$command command received\n";
+		print STDERR "\tscreen is ", $message->get_screen, "\n";
+		print STDERR "\tworkspace is ", $message->get_workspace, "\n";
+		print STDERR "\tstartup id is ", $message->get_startup_id, "\n";
+	    }
+	}
+	elsif ($command eq 'xdg-traymenu-popup') {
+	    if ($ops{verbose}) {
+		print STDERR "$command command received\n";
+		print STDERR "\tscreen is ", $message->get_screen, "\n";
+		print STDERR "\tworkspace is ", $message->get_workspace, "\n";
+		print STDERR "\tstartup id is ", $message->get_startup_id, "\n";
+	    }
+	    my $text = $message->get_text;
+	    my ($button,$timestamp) = split(/,/,$text);
+	    $button = 3 unless $button == 1 || $button == 2 || $button == 3;
+	    $timestamp = $time unless $timestamp;
+	    $menu->show_all;
+	    $menu->show_now;
+	    $menu->map;
+#$menu->popup(undef,undef,undef,undef,$button,$timestamp);
+	}
+	return 'ok';
+});
+
+#my $style = Gtk2::RcStyle->new;
 my @colors = (
     Gtk2::Gdk::Color->new(0x16*257,0x16*257,0x16*257), # 0
     Gtk2::Gdk::Color->new(0x37*257,0x37*257,0x37*257), # 1
@@ -445,16 +575,16 @@ my %colors = (
     },
 );
 
-my $font = Pango::FontDescription->from_string('Liberation Sans 8');
-$style->font_desc($font);
+#my $font = Pango::FontDescription->from_string('Liberation Sans 8');
+#$style->font_desc($font);
 #$style->name('default');
 
 foreach my $state (qw(normal active prelight selected insensitive)) {
-    $style->color_flags($state,[qw(base fg bg text)]);
-    $style->base($state,$colors{'base'}{$state});
-    $style->bg($state,$colors{'bg'}{$state});
-    $style->fg($state,$colors{'fg'}{$state});
-    $style->text($state,$colors{'text'}{$state});
+#$style->color_flags($state,[qw(base fg bg text)]);
+#$style->base($state,$colors{'base'}{$state});
+#$style->bg($state,$colors{'bg'}{$state});
+#$style->fg($state,$colors{'fg'}{$state});
+#$style->text($state,$colors{'text'}{$state});
 }
 
 my $parser = new XDG::Menu::Parser;
@@ -462,9 +592,12 @@ my $tree = $parser->parse_menu($ops{root_menu});
 my $tray = new XDG::Menu::Tray;
 #$tray->{style} = $style;
 #$tray->{colors} = \@colors;
-my $menu = $tray->create($tree);
+$menu = $tray->create($tree);
 
-my $icon = new Gtk2::StatusIcon->new_from_icon_name('start-here');
+my $pixbuf = Gtk2::IconTheme->get_default->load_icon('arch-logo',16,['generic-fallback','use-builtin']);
+my $icon =  Gtk2::StatusIcon->new_from_pixbuf($pixbuf);
+
+#my $icon = new Gtk2::StatusIcon->new_from_icon_name('start-here');
 $icon->set_tooltip_text('Click for menu...');
 $icon->set_visible(1);
 $icon->signal_connect(button_press_event=>sub{
@@ -472,12 +605,24 @@ $icon->signal_connect(button_press_event=>sub{
     my $button = $ev->button;
     return Gtk2::EVENT_PROPAGATE unless $button == 1 or $button == 2 or $button == 3;
     my $time = $ev->time;
-    $menu->popup(undef,undef,undef,undef,$button,$time);
+#   my $menu = $tray->create($tree);
+#    Gtk2::Rc->reparse_all;
+#    Gtk2::Rc->parse("$ENV{HOME}/.gtkrc-2.0");
+#    Gtk2::Rc->reset_styles('gtk-theme-name');
+    $menu->popup(undef,undef,'Gtk2::StatusIcon::position_menu',$icon,$button,$time);
     return Gtk2::EVENT_STOP;
 });
 $icon->signal_connect(popup_menu=>sub{
     my ($icon,$button,$time) = @_;
-    $menu->popup(undef,undef,undef,undef,$button,$time);
+#    Gtk2::Rc->parse_string('gtk-theme-name="Squared-green"'."\n");
+#    Gtk2::Rc->reparse_all;
+#    Gtk2::Rc->reset_styles('gtk-theme-name');
+#    my $menu = $tray->create($tree);
+#    Gtk2::Rc->set_default_files("$ENV{HOME}/.gtkrc-2.0");
+#    Gtk2::Rc->reparse_all;
+#    Gtk2::Rc->parse("$ENV{HOME}/.gtkrc-2.0");
+#    Gtk2::Rc->reset_styles('gtk-theme-name');
+    $menu->popup(undef,undef,'Gtk2::StatusIcon::position_menu',$icon,$button,$time);
     return Gtk2::EVENT_PROPAGATE;
 });
 $icon->signal_connect(activate=>sub{
@@ -487,6 +632,14 @@ $icon->signal_connect(activate=>sub{
 });
 $icon->signal_connect(query_tooltip=>sub{
     my ($icon,$x,$y,$bool,$tooltip) = @_;
+    return Gtk2::EVENT_PROPAGATE;
+});
+$icon->signal_connect(size_changed=>sub{
+    my ($icon,$size) = @_;
+    if ($size != $pixbuf->get_height) {
+	$pixbuf = Gtk2::IconTheme->get_default->load_icon('arch-logo',$size,['generic-fallback','use-builtin']);
+	$icon->set_from_pixbuf($pixbuf);
+    }
     return Gtk2::EVENT_PROPAGATE;
 });
 
@@ -604,8 +757,6 @@ F<$HOME/.gtkrc-2.0>).
 
 =back
 
-=cut
-
 =head1 HISTORY
 
 I wrote B<xdg-traymenu> for a number of reasons:
@@ -615,15 +766,15 @@ I wrote B<xdg-traymenu> for a number of reasons:
 =item 1.
 
 Existing fluxbox menu generators that read XDG .desktop files
-(L<menutray(1)>) do not conform to XDG menu generation specifications
-and in particular are incapable of merging menus.
+(L<fbmenugen(1)>, L<menutray(1)>) do not conform to XDG menu generation
+specifications and in particular are incapable of merging menus.
 
 =item 2.
 
 Existing XDG menu generators (such as the SuSE L<xdg_menu(1)> script) do
-not properly merge default merge directories and do no observe <Layout>
-commands.  Also, they are poor at including icons in the generated
-menus.  They, of course, do not generate tray menus either.
+not properly merge default merge directories and do not observe <Layout>
+commands.  Also, they are poor at including icons in the generated menus.
+They, of course, do not generate tray menus either.
 
 =item 3.
 
@@ -639,5 +790,9 @@ specific submenus.
 
 =back
 
-=cut
+=head1 SEE ALSO
 
+L<XDG::Menu(3pm)>, L<XDG::Icons(3pm)>,
+L<Linux::Inotify2(3pm)>.
+
+=cut

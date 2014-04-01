@@ -1,4 +1,5 @@
 package XDG::Menu::Tray;
+use base qw(XDG::Menu::Base);
 use Gtk2;
 use strict;
 use warnings;
@@ -24,16 +25,6 @@ generates a Gtk2 menu.
 B<XDG::Menu::Tray> has the following methods:
 
 =over
-
-=item XDG::Menu::Tray->B<new>() => XDG::Menu::Tray
-
-Creates a new XDG::Menu::Tray instance for creating Gtk2 menus.
-
-=cut
-
-sub new {
-    return bless {}, shift;
-}
 
 =item $tray->B<create>($tree) => Gtk2::Menu
 
@@ -69,7 +60,7 @@ sub apply_style {
 sub make_transparent {
     my $menu = shift;
     my $window = $menu->get_parent_window;
-#   $window->set_opacity(0.92) if $window;
+    $window->set_opacity(0.92) if $window;
     return Gtk2::EVENT_PROPAGATE;
 }
 
@@ -78,9 +69,15 @@ sub create {
     my $m = Gtk2::Menu->new;
     $self->apply_style($m);
     $m->signal_connect(map=>\&make_transparent);
+
+    my $mi = Gtk2::TearoffMenuItem->new;
+    $self->apply_style($mi);
+    $mi->show_all;
+    $m->append($mi);
+
     $self->build($item,$m);
 
-    my $mi = Gtk2::SeparatorMenuItem->new;
+    $mi = Gtk2::SeparatorMenuItem->new;
     $self->apply_style($mi);
     $mi->show_all;
     $m->append($mi);
@@ -106,7 +103,7 @@ sub create {
     $im = Gtk2::Image->new_from_icon_name('system-log-out','menu');
     $self->apply_style($im) if $im;
     $mi->set_image($im) if $im;
-    $mi->signal_connect(activate=>sub{system "fluxbox-logout"});
+    $mi->signal_connect(activate=>sub{system "xde-logout"});
     $mi->show_all;
     $m->append($mi);
 
@@ -132,6 +129,9 @@ sub Header {
     my $mi = Gtk2::ImageMenuItem->new;
     $self->apply_style($mi);
     $mi->set_label($name);
+    if (my $tool = $item->{Entry}{Comment}) {
+	$mi->set_tooltip_text($tool);
+    }
     my $ic = $item->{Entry}{Icon}; $ic = 'gtk-unknown' unless $ic;
     my $im = Gtk2::Image->new_from_icon_name($ic,'menu');
     $self->apply_style($im) if $im;
@@ -152,6 +152,9 @@ sub Application {
     my $mi = Gtk2::ImageMenuItem->new;
     $self->apply_style($mi);
     $mi->set_label($name);
+    if (my $tool = $item->{Entry}{Comment}) {
+	$mi->set_tooltip_text($tool);
+    }
     my $ic = $item->{Entry}{Icon}; $ic = 'gtk-unknown' unless $ic;
     my $im = Gtk2::Image->new_from_icon_name($ic,'menu');
     $self->apply_style($im) if $im;
@@ -173,6 +176,9 @@ sub Directory {
     my $mi = Gtk2::ImageMenuItem->new;
     $self->apply_style($mi);
     $mi->set_label($name);
+    if (my $tool = $item->{Entry}{Comment}) {
+	$mi->set_tooltip_text($tool);
+    }
     my $ic = $item->{Entry}{Icon}; $ic = 'gtk-unknown' unless $ic;
     my $im = Gtk2::Image->new_from_icon_name($ic,'menu');
     $self->apply_style($im) if $im;

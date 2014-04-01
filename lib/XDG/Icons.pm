@@ -1,7 +1,7 @@
+package XDG::Icons;
+use base qw(XDG::Context);
 require XDG::IconTheme;
 require XDG::IconData;
-
-package XDG::Icons;
 use strict;
 use warnings;
 
@@ -16,6 +16,10 @@ XDG::Icons - read XDG icon directories
  my $best = $icons->FindBestIcon(['start-here','about'],16);
 
 =head1 DESCRIPTION
+
+The following is from the XDG Icon specification:
+
+=over
 
 By default, apps should look in F<$HOME/.icons> (for backward
 compatibility), in F<$XDG_DATA_DIRS/icons> and in F</usr/share/pixmaps>
@@ -43,12 +47,11 @@ index.theme that describes the theme.  The first index.theme found while
 searching the base directories in order is used.  This file describes
 the general attributes of the theme.
 
-In the theme directory are also a set of subdirectories containing
-image files.  Each directory contains icons designed for a certain
-nominal icon size, as described by the index.theme file.  The
-subdirectories are allowed to be several levels deep, e.g. the
-subdirectory F<48x48/apps> in the theme F<hicolor> would end up at
-F<$basedir/hicolor/48x48/apps>.
+In the theme directory are also a set of subdirectories containing image
+files.  Each directory contains icons designed for a certain nominal
+icon size, as described by the index.theme file.  The subdirectories are
+allowed to be several levels deep, e.g. the subdirectory F<48x48/apps>
+in the theme F<hicolor> would end up at F<$basedir/hicolor/48x48/apps>.
 
 The image files must be one of the types: PNG, XPM, or SVG, and the
 extension must be F<.png>, F<.xpm>, or F<.svg> (lower case).  The
@@ -57,7 +60,7 @@ SVGs should just ignore any F<.svg> files.  In addition to this there
 may be an additional file with extra icon-data for each file.  It should
 have the same base name as the image file, with the extension F<.icon>.
 
-=cut
+=back
 
 =head1 METHODS
 
@@ -65,28 +68,28 @@ The XDG::Icons module provides the following methods:
 
 =over
 
-=item new($hashref) => XDG::Icons
+=item B<new>($hashref) => XDG::Icons
 
 Establishes the default theme, search directory paths, and reads all
 available theme files.  The options contained in the C<$hashref> can be:
 
 =over
 
-=item Prepend => $directory
+=item I<Prepend> => $directory
 
 Prepend the given directory, C<$directory>, or colon-separated list of
 directories, to the directory search path.
 
-=item Append => $directory
+=item I<Append> => $directory
 
 Append the given directory, C<$directory>, or colon-separated list of
 directories, to the directory search path.
 
-=item Theme => $name
+=item I<Theme> => $name
 
 Use the given theme name, C<$name>, as the default icon theme.
 
-=item Extensions => [ $ext1, $ext2 ] or "$ext1,$ext2"
+=item I<Extensions> => [ $ext1, $ext2 ] or "$ext1,$ext2"
 
 Specify the extensions to search.  The default if unspecified is 'png',
 'svg' and 'xpm', in that order.  Extensions may be specified with an
@@ -148,7 +151,7 @@ sub new {
     return $self->Rescan();
 }
 
-=item FindIcon($icon,$size,[$ext]) => $filename
+=item B<FindIcon>($icon,$size,[$ext]) => $filename
 
 Requests that the filename of an icon with name, C<$icon>, be found for
 size, C<$size>, with extensions optionally specified with the arrayref
@@ -226,7 +229,7 @@ sub _LookupFallbackIcon {
     return undef;
 }
 
-=item FindBestIcon($iconlist,$size,[$ext]) => $filename
+=item B<FindBestIcon>($iconlist,$size,[$ext]) => $filename
 
 Like L</FindIcon>, but searches for icons with the names provided in the
 entire array referenced by C<$iconlist> before falling back to fall-back
@@ -262,7 +265,7 @@ sub _FindBestIconHelper {
     return undef;
 }
 
-=item Directories() => list
+=item B<Directories>() => list
 
 Returns the list of directories in which XDG::Icons searched for files.
 This list can be used with L<Linux::Inotify2(3pm)> to indicate when icon
@@ -275,7 +278,7 @@ sub Directories {
 	return @{$self->{dirs}};
 }
 
-=item Rescan() =>
+=item B<Rescan>() => undef
 
 Ask XDG::Icons to rescan its directories for themes and prepare to have
 icons searched in the new set of directories.
@@ -343,3 +346,4 @@ L<XDG::IconTheme(3pm)>
 =cut
 
 1;
+# vim: sw=4 tw=72

@@ -1,4 +1,5 @@
 package XDG::Menu::Wmaker;
+use base qw(XDG::Menu::Base);
 use strict;
 use warnings;
 
@@ -19,16 +20,6 @@ B<XDG::Menu::Wmaker> has the folllowing methods:
 
 =over
 
-=item XDG::Menu::Wmaker->B<new>($tree) => XDG::Menu::Wmaker
-
-Creates a new XDG::Menu::Wmaker instance for creating WindowMaker menus.
-
-=cut
-
-sub new {
-    return bless {}, shift;
-}
-
 =item $wmaker->B<create>($tree) => scalar
 
 Creates the WindowMaker menu from menu tree, C<$tree>, and returns the menu
@@ -42,6 +33,7 @@ parsing the XDG menu using XDG::Menu::Parser (see L<XDG::Menu(3pm)>).
 sub create {
     my ($self,$item) = @_;
     my $text = '';
+    $text .= "\"Root Menu\" MENU\n";
     $text .= "\"Run...\" SHEXEC \"%A(Run,Type Command:)\"\n";
     $text .= "\"Gvim\" SHORTCUT \"Control+Mod1+v\" SHEXEC \"gvim -geometry 120x142\"\n";
     $text .= "\"Gvim (wilbur)\" SHORTCUT \"Control+Shift+Mod1+v\" SHEXEC \"ssh -f wilbur gvim -geometry 120x100\"\n";
@@ -79,7 +71,7 @@ sub create {
     $text .= "\"Window Maker\" END\n";
 
 # FIXME: we should get the list of window manager from the .desktop
-# files in /usr/share/xsessions
+# files in /usr/share/xsessions or just plain check for executability.
 
     $text .= "\"Window Managers\" MENU\n";
     $text .= "  \"Fluxbox\" RESTART /usr/bin/fluxbox\n";
@@ -103,6 +95,7 @@ sub create {
     $text .= "\"WorkSpace\" END\n";
     $text .= "\"Exit\" EXIT\n";
     $text .= "\"Exit Session\" SHUTDOWN\n";
+    $text .= "\"Root Menu\" END\n";
     return $text;
 }
 sub build {
@@ -139,10 +132,10 @@ sub Application {
 sub Directory {
     my ($self,$item,$indent) = @_;
     my $text = '';
-    $text .= sprintf "%s\"%s\" MENU\n";
+    $text .= sprintf "%s\"%s\" MENU\n",
         $indent, $item->Name;
     $text .= $self->build($item->{Menu},$indent.'  ');
-    $text .= sprintf "%s\"%s\" END\n";
+    $text .= sprintf "%s\"%s\" END\n",
         $indent, $item->Name;
     return $text;
 }
