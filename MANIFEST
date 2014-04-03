@@ -19,6 +19,7 @@ lib/XDG/Menu/Openbox3.pm
 lib/XDG/Menu/Openbox.pm
 lib/XDG/Menu/Parser.pm
 lib/XDG/Menu/Pekwm.pm
+lib/XDG/Menu/PerlPanel.pm
 lib/XDG/Menu.pm
 lib/XDG/Menu/Tray/Blackbox.pm
 lib/XDG/Menu/Tray/Ctwm.pm
