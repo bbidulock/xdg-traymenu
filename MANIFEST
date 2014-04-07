@@ -4,6 +4,7 @@ MANIFEST.SKIP
 xdg-icon
 xdg-traymenu
 xdg-menugen
+xdg-traymenu.desktop
 lib/XDG/Context.pm
 lib/XDG/IconData.pm
 lib/XDG/Icons.pm
