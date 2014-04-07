@@ -2,13 +2,14 @@ use ExtUtils::MakeMaker;
 my $VERSION = '0.01';
 if (-d ".git") {
 	$VERSION = `git describe --tags`;
-	$VERSION =~ s/[-_]/./g;
-	$VERSION =~ s/\.g[0-9a-f]{7,}$//;
+	$VERSION =~ s/-.*$//;
 }
 WriteMakefile(
 	NAME => 'xdg-menu',
 	VERSION => $VERSION,
 	LICENSE => 'perl',
+	ABSTRACT => 'XDG compliant system tray and root menu generator',
+	AUTHOR => 'Brian Bidulock <bidulock@openss7.org>',
 	EXE_FILES => [
 		'xdg-icon',
 		'xdg-traymenu',
