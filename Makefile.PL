@@ -1,7 +1,13 @@
 use ExtUtils::MakeMaker;
+my $VERSION = '0.01';
+if (-d ".git") {
+	$VERSION = `git describe --tags`;
+	$VERSION =~ s/[-_]/./g;
+	$VERSION =~ s/\.g[0-9a-f]{7,}$//;
+}
 WriteMakefile(
 	NAME => 'xdg-menu',
-	VERSION => '0.01',
+	VERSION => $VERSION,
 	LICENSE => 'perl',
 	EXE_FILES => [
 		'xdg-icon',
@@ -9,7 +15,16 @@ WriteMakefile(
 		'xdg-menugen',
 	],
 	PREREQ_PM => {
-		'Getopt::Long' => 0,
+		'Carp' => 0,			# perl
+		'Encode' => 0,			# perl
+		'File::Path' => 0,		# perl
+		'Getopt::Long' => 0,		# perl
+		'Glib' => 0,			# glib-perl
+		'Gtk2' => 0,			# gtk2-perl
+		'Gtk2::Unique' => 0,		# perl-gtk2-unique
+		'I18N::Langinfo' => 0,		# perl
+		'POSIX' => 0,			# perl
+		'XML::SAX::ParserFactory' => 0,	# perl-xml-sax
 	},
 	# basically strip the pod out of the .pm file and squeeze blank lines
 	PM_FILTER => qq{(sed '/^=[^c]/,/^=cut/d'|cat -s)},

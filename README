@@ -1,0 +1,15 @@
+
+This package contains several perl utilities as follows:
+
+  xdg-traymenu  - An XDG compliant menu that sits in the system tray.
+
+  xdg-menugen   - An XDG compliant command line root menu generator
+		  for a wide list of lightweight window managers.
+
+  xdg-icon	- An XDG compliant command line icon lookup tool.
+
+  Also included is a set of XDG perl modules that can be used for
+  building your own menus or that you can modify to support more
+  window managers.
+
+  See the manual pages for more information.

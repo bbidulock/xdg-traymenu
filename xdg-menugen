@@ -288,6 +288,12 @@ generating the menu, but to monitor pertinent directories for changes,
 and regenerate the menu when changes are detected.  This option implies
 the B<--output> option.  This option requires L<Linux::Inotify2(3pm)>.
 
+=item B<--launch>, B<-L>, B<--nolaunch>
+
+Specifies whether to use L<xdg-launch(1)> to launch desktop files directly
+or not.  This option will only be honored when the L<xdg-launch(1)> program
+is available.
+
 =back
 
 =cut
@@ -491,6 +497,9 @@ OPTIONS:
         do not exit after first menu generation, but monitor pertinent
         directories for changes and regenerate the menu when required;
         implies the --output option.
+
+    --launch,-L --nolaunch
+        use xdg-launch program to launch desktop entry directly
 EOF
     exit($retval);
 }

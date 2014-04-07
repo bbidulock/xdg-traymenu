@@ -190,6 +190,7 @@ sub Icon {
 
 package XDG::Menu::DesktopApplication;
 use base qw(XDG::Menu::DesktopEntry);
+use Carp qw(cluck);
 use strict;
 use warnings;
 
@@ -463,6 +464,19 @@ sub resolve {
 		push @deletions, $_;
 		next;
 	    }
+	    if ($app->{Hidden} and $app->{Hidden} =~ /true/i) {
+		push @deletions, $_;
+		next;
+	    }
+	    if ($app->{NoDisplay} and $app->{NoDisplay} =~ /true/i) {
+		push @deletions, $_;
+		next;
+	    }
+	    unless ($app->{Exec}) {
+		print STDERR "WARNING: $app->{file} has no Exec statement\n";
+		push @deletions, $_;
+		next;
+	    }
 	    if ($app->{TryExec}) {
 		if ($app->{TryExec} =~ m{/} and not -x $app->{TryExec}) {
 		    push @deletions, $_;
@@ -472,14 +486,17 @@ sub resolve {
 		    push @deletions, $_;
 		    next;
 		}
-	    }
-	    if ($app->{Hidden} and $app->{Hidden} =~ /true/i) {
-		push @deletions, $_;
-		next;
-	    }
-	    if ($app->{NoDisplay} and $app->{NoDisplay} =~ /true/i) {
-		push @deletions, $_;
-		next;
+	    } else {
+		my $exec = $app->{Exec};
+		$exec =~ s/\s.*$//;
+		if ($exec =~ m{/} and not -x $exec) {
+		    push @deletions, $_;
+		    next;
+		}
+		if ($exec !~ m{/} and not which($exec)) {
+		    push @deletions, $_;
+		    next;
+		}
 	    }
 	}
 	foreach (@deletions) {

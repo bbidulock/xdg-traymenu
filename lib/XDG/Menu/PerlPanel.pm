@@ -215,7 +215,7 @@ sub Application {
     my $name = $item->Name; $name =~ s/[)]/\\)/g;
     if ($self->{ops}{launch}) {
 	return sprintf "%s[exec] (%s) {xdg-launch %s} <%s>\n",
-	       $indent, $name, $item->Id, $item->Icon([qw(png xpm)]);
+	       $indent, $name, $item->{Entry}->{file}, $item->Icon([qw(png xpm)]);
     } else {
 	return sprintf "%s[exec] (%s) {%s} <%s>\n",
 	       $indent, $name, $item->Exec, $item->Icon([qw(png xpm)]);
