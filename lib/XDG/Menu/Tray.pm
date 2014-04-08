@@ -132,7 +132,7 @@ sub Header {
     if (my $tool = $item->{Entry}{Comment}) {
 	$mi->set_tooltip_text($tool);
     }
-    my $fi = $item->Icon([qw(png xpm svg)]);
+    my $fi = $item->Icon([qw(png xpm svg jpg)]);
     my $pb = Gtk2::Gdk::Pixbuf->new_from_file_at_size($fi,16,16) if $fi;
     my $im = Gtk2::Image->new_from_pixbuf($pb) if $pb;
     $self->apply_style($im) if $im;
@@ -156,7 +156,7 @@ sub Application {
     if (my $tool = $item->{Entry}{Comment}) {
 	$mi->set_tooltip_text($tool);
     }
-    my $fi = $item->Icon([qw(png xpm svg)]);
+    my $fi = $item->Icon([qw(png xpm svg jpg)]);
     my $pb = Gtk2::Gdk::Pixbuf->new_from_file_at_size($fi,16,16) if $fi;
     my $im = Gtk2::Image->new_from_pixbuf($pb) if $pb;
     $self->apply_style($im) if $im;
@@ -181,7 +181,7 @@ sub Directory {
     if (my $tool = $item->{Entry}{Comment}) {
 	$mi->set_tooltip_text($tool);
     }
-    my $fi = $item->Icon([qw(png xpm svg)]);
+    my $fi = $item->Icon([qw(png xpm svg jpg)]);
     my $pb = Gtk2::Gdk::Pixbuf->new_from_file_at_size($fi,16,16) if $fi;
     my $im = Gtk2::Image->new_from_pixbuf($pb) if $pb;
     $self->apply_style($im) if $im;

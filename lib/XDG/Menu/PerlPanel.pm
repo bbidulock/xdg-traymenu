@@ -36,7 +36,7 @@ entry.
 sub icon {
     my($self,@names) = @_;
     foreach (@names) {
-	my $icon = $self->SUPER::icon($_,qw(png xpm));
+	my $icon = $self->SUPER::icon($_,qw(png xpm svg jpg));
 	return sprintf(" <%s>",$icon) if $icon;
     }
     return '';
@@ -203,7 +203,7 @@ sub Header {
     my ($self,$item,$indent) = @_;
     my $name = $item->Name; $name =~ s/[)]/\\)/g;
     return sprintf "%s[nop] (%s) <%s>\n",
-	   $indent, $name, $item->Icon([qw(png xpm)]);
+	   $indent, $name, $item->Icon([qw(png xpm svg jpg)]);
 }
 sub Separator {
     my ($self,$item,$indent) = @_;
@@ -215,10 +215,10 @@ sub Application {
     my $name = $item->Name; $name =~ s/[)]/\\)/g;
     if ($self->{ops}{launch}) {
 	return sprintf "%s[exec] (%s) {xdg-launch %s} <%s>\n",
-	       $indent, $name, $item->{Entry}->{file}, $item->Icon([qw(png xpm)]);
+	       $indent, $name, $item->{Entry}->{file}, $item->Icon([qw(png xpm svg jpg)]);
     } else {
 	return sprintf "%s[exec] (%s) {%s} <%s>\n",
-	       $indent, $name, $item->Exec, $item->Icon([qw(png xpm)]);
+	       $indent, $name, $item->Exec, $item->Icon([qw(png xpm svg jpg)]);
     }
 }
 sub Directory {
@@ -230,7 +230,7 @@ sub Directory {
     my $name = $item->Name; $name =~ s/[)]/\\)/g;
     $text .= sprintf "%s[submenu] (%s) {%s} <%s>\n",
 	    $indent, $name, $item->Name." Menu",
-	    $item->Icon([qw(png xpm)]);
+	    $item->Icon([qw(png xpm svg jpg)]);
     $text .= $self->build($item->{Menu},$indent.'  ');
     $text .= sprintf "%s[end] # (%s)\n",
 	    $indent, $name;
