@@ -622,8 +622,18 @@ $icon->signal_connect(popup_menu=>sub{
 #    Gtk2::Rc->reparse_all;
 #    Gtk2::Rc->parse("$ENV{HOME}/.gtkrc-2.0");
 #    Gtk2::Rc->reset_styles('gtk-theme-name');
-    my ($menu,$mi,$im) = Gtk2::Menu->new;
-    $mi = Gtk2::ImageMenuItem->new_with_label('About...');
+    my ($cmenu,$mi,$im) = Gtk2::Menu->new;
+    $mi = Gtk2::ImageMenuItem->new_from_stock('gtk-refresh');
+    $mi->signal_connect(activate=>sub{
+	    $parser = new XDG::Menu::Parser;
+	    $tree = $parser->parse_menu($ops{root_menu});
+	    $tray = new XDG::Menu::Tray;
+	    $menu = $tray->create($tree);
+	    return Gtk2::EVENT_STOP;
+    });
+    $mi->show_all;
+    $cmenu->append($mi);
+    $mi = Gtk2::ImageMenuItem->new_from_stock('gtk-about');
     $mi->signal_connect(activate=>sub{
 	    Gtk2->show_about_dialog(undef,
 		    logo_icon_name=>'start-here',
@@ -642,20 +652,16 @@ EOF
 		    # logo=>,
 	    );
     });
-    $im = Gtk2::Image->new_from_stock('gtk-about','menu');
-    $mi->set_image($im);
     $mi->show_all;
-    $menu->append($mi);
+    $cmenu->append($mi);
     $mi = Gtk2::SeparatorMenuItem->new;
     $mi->show_all;
-    $menu->append($mi);
-    $mi = Gtk2::ImageMenuItem->new_with_label('Quit');
-    $im = Gtk2::Image->new_from_stock('gtk-quit','menu');
-    $mi->set_image($im);
+    $cmenu->append($mi);
+    $mi = Gtk2::ImageMenuItem->new_from_stock('gtk-quit');
     $mi->show_all;
     $mi->signal_connect(activate=>sub{ Gtk2->main_quit(); 1; });
-    $menu->append($mi);
-    $menu->popup(undef,undef,'Gtk2::StatusIcon::position_menu',$icon,$button,$time);
+    $cmenu->append($mi);
+    $cmenu->popup(undef,undef,'Gtk2::StatusIcon::position_menu',$icon,$button,$time);
     return Gtk2::EVENT_PROPAGATE;
 });
 $icon->signal_connect(activate=>sub{
