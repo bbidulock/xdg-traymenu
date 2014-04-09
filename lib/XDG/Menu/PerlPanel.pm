@@ -175,6 +175,7 @@ sub rootmenu {
     $text .= sprintf "%s\n", '  [reconfig] (Reload config)'.$self->icon('gtk-redo-ltr');
     $text .= sprintf "%s\n", '  [restart] (Restart) {}'.$self->icon('gtk-refresh');
     $text .= sprintf "%s\n", '  [exec] (About) {(fluxbox -v; fluxbox -info | sed 1d) | gxmessage -file - -center}'.$self->icon('help-about');
+    $text .= sprintf "%s\n", '  [exec] (Refresh Menu) {(cd '.$ENV{HOME}.'/.perlpanel; xdg-menugen -format perlpanel -launch >menu.new; mv -f menu.new menu)}'.$self->icon('gtk-refresh');
     $text .= sprintf "%s\n", '  [separator]';
     $text .= sprintf "%s\n", '  [exit] (Exit)'.$self->icon('gtk-quit');
     $text .= sprintf "%s\n", '[endencoding]';

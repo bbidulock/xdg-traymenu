@@ -148,6 +148,7 @@ sub rootmenu {
     my $text = '';
     $text .= $entries;
     $text .= $self->wmmenu();
+    $text .= 'prog "Refresh Menu" '.$self->icon('gtk-refresh').' xdg-menugen -format icewm -launch >'.$ENV{HOME}.'/.icewm/menu'."\n";
     return $text;
 }
 sub build {
