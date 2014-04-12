@@ -422,7 +422,7 @@ sub usage {
     my $retval = shift;
     print STDERR<<EOF;
 USAGE:
-    xdg-traymenu [OPTIONS]
+    $program [OPTIONS]
 
 OPTIONS:
     --help,-h
@@ -484,19 +484,19 @@ EOF
     exit($retval);
 }
 
-$program = 'xdg-traymenu-popup' if $ops{popup};
+my $prog = $ops{popup} ? "$program-popup" : $program;
 
 my $DESKTOP_STARTUP_ID = delete $ENV{DESKTOP_STARTUP_ID};
 my $unique = Gtk2::UniqueApp->new(
-	'com.unexicon.xdg-traymenu', $DESKTOP_STARTUP_ID,
-	'xdg-traymenu' => 1,
-	'xdg-traymenu-popup' => 2);
+	"com.unexicon.$program", $DESKTOP_STARTUP_ID,
+	"$program" => 1,
+	"$program-popup" => 2);
 if ($unique->is_running) {
-    if ($program eq 'xdg-traymenu') {
-	$unique->send_message_by_name($program=>text=>join('|',@SAVEARGS));
+    if ($prog eq $program) {
+	$unique->send_message_by_name($prog=>text=>join('|',@SAVEARGS));
 	print STDERR "Another instance of $program is already running.\n";
-    } elsif ($program eq 'xdg-traymenu-popup') {
-	$unique->send_message_by_name($program=>text=>join(',',$ops{button},$ops{timestamp}));
+    } elsif ($prog eq "$program-popup") {
+	$unique->send_message_by_name($prog=>text=>join(',',$ops{button},$ops{timestamp}));
     }
     exit(0);
 }
@@ -507,7 +507,7 @@ my $window = Gtk2::Window->new('toplevel');
 $unique->watch_window($window);
 $unique->signal_connect(message_received=>sub{
 	my ($unique,$command,$message,$time) = @_;
-	if ($command eq 'xdg-traymenu') {
+	if ($command eq $program) {
 	    if ($ops{verbose}) {
 		print STDERR "$command command received\n";
 		print STDERR "\tscreen is ", $message->get_screen, "\n";
@@ -515,7 +515,7 @@ $unique->signal_connect(message_received=>sub{
 		print STDERR "\tstartup id is ", $message->get_startup_id, "\n";
 	    }
 	}
-	elsif ($command eq 'xdg-traymenu-popup') {
+	elsif ($command eq "$program-popup") {
 	    if ($ops{verbose}) {
 		print STDERR "$command command received\n";
 		print STDERR "\tscreen is ", $message->get_screen, "\n";
@@ -637,7 +637,7 @@ $icon->signal_connect(popup_menu=>sub{
     $mi->signal_connect(activate=>sub{
 	    Gtk2->show_about_dialog(undef,
 		    logo_icon_name=>'start-here',
-		    program_name=>'xdg-traymenu',
+		    program_name=>$program,
 		    version=>'0.01',
 		    comments=>'An XDG compliant tray menu.',
 		    copyright=>'Copyright (c) 2013, 2014  OpenSS7 Corporation.',

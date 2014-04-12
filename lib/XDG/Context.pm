@@ -417,10 +417,10 @@ sub get_entry {
 	    $section = $1;
 	    $section = '' unless $sections =~ m{;$section;};
 	}
-	elsif ($section and /^([^=\[]+)\[([^=\]]+)\]=([^[:cntrl:]]*)/) {
+	elsif ($section and /^([^=\[]+)\[([^=\]]+)\]\s*=\s*([^[:cntrl:]]*)/) {
 	    $xl{$1}{$2} = decode('UTF-8', $3);
 	}
-	elsif ($section and /^([^=]*)=([^[:cntrl:]]*)/) {
+	elsif ($section and /^([^=]*)\s*=\s*([^[:cntrl:]]*)/) {
 	    $e{$1} = decode('UTF-8', $2) unless exists $e{$1};
 	}
     }
