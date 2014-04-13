@@ -564,17 +564,35 @@ sub resolve {
     $self->XDG::Menu::Element::resolve($pars);
     # cull {Applications} based on (Only|Not)ShowIn, Hidden, NoDisplay
     if ($self->{Applications}) {
-	my $de = ";$pars->{XDG_CURRENT_DESKTOP};";
+	my @des = split(/:/,$pars->{XDG_CURRENT_DESKTOP});
 	my @deletions = ();
 	foreach (keys %{$self->{Applications}}) {
 	    my $app = $self->{Applications}{$_};
-	    if ($app->{OnlyShowIn} and ";$app->{OnlyShowIn};" !~ /$de/) {
-		push @deletions, $_;
-		next;
+	    if ($app->{OnlyShowIn}) {
+		my $found = 0;
+		foreach my $de (@des) {
+		    if (";$app->{OnlyShowIn};" =~ /;$de;/) {
+			$found = 1;
+			last;
+		    }
+		}
+		if (!$found) {
+		    push @deletions, $_;
+		    next;
+		}
 	    }
-	    if ($app->{NotShowIn} and ";$app->{NotShowIn};" =~ /$de/) {
-		push @deletions, $_;
-		next;
+	    if ($app->{NotShowIn}) {
+		my $found = 0;
+		foreach my $de (@des) {
+		    if (";$app->{OnlyShowIn};" =~ /;$de;/) {
+			$found = 1;
+			last;
+		    }
+		}
+		if ($found) {
+		    push @deletions, $_;
+		    next;
+		}
 	    }
 	    if ($app->{Hidden} and $app->{Hidden} =~ /true/i) {
 		push @deletions, $_;

@@ -470,7 +470,7 @@ sub get_autostart {
 	closedir($dir);
     }
     # Mark those that are not to be run...
-    my $desktop = $self->{XDG_CURRENT_DESKTOP};
+    my @desktops = split(/:/,$self->{XDG_CURRENT_DESKTOP});
     foreach my $e (values %files) {
 	unless ($e->{Name}) {
 	    $e->{'X-Disable'} = 'true';
@@ -487,15 +487,33 @@ sub get_autostart {
 	    $e->{'X-Disable-Reason'} = "Hidden";
 	    next;
 	}
-	if ($e->{OnlyShowIn} and ";$e->{OnlyShowIn};" !~ /;$desktop;/) {
-	    $e->{'X-Disable'} = 'true';
-	    $e->{'X-Disable-Reason'} = "Only shown in $e->{OnlyShowIn}";
-	    next;
+	if ($e->{OnlyShowIn}) {
+	    my $found = 0;
+	    foreach my $desktop (@desktops) {
+		if (";$e->{OnlyShowIn};" =~ /;$desktop;/) {
+		    $found = 1;
+		    last;
+		}
+	    }
+	    if (!$found) {
+		$e->{'X-Disable'} = 'true';
+		$e->{'X-Disable-Reason'} = "Only shown in $e->{OnlyShowIn}";
+		next;
+	    }
 	}
-	if ($e->{NotShowIn} and ";$e->{NotShowIn};" =~ /;$desktop;/) {
-	    $e->{'X-Disable'} = 'true';
-	    $e->{'X-Disable-Reason'} = "Not shown in $e->{NotShowIn}";
-	    next;
+	if ($e->{NotShowIn}) {
+	    my $found = 0;
+	    foreach my $desktop (@desktops) {
+		if (";$e->{NotShowIn};" =~ /;$desktop;/) {
+		    $found = 1;
+		    last;
+		}
+	    }
+	    if ($found) {
+		$e->{'X-Disable'} = 'true';
+		$e->{'X-Disable-Reason'} = "Not shown in $e->{NotShowIn}";
+		next;
+	    }
 	}
         unless ($e->{TryExec}) {
             my @words = split(/\s+/,$e->{Exec});
@@ -670,7 +688,7 @@ sub get_applications {
 	closedir($dir);
     }
     # Mark those that are not to be run...
-    my $desktop = $self->{XDG_CURRENT_DESKTOP};
+    my @desktops = split(/:/,$self->{XDG_CURRENT_DESKTOP});
     my @PATH = split(/:/,$ENV{PATH});
     foreach my $e (values %files) {
 	unless ($e->{Name}) {
@@ -688,15 +706,33 @@ sub get_applications {
 	    $e->{'X-Disable-Reason'} = "Hidden";
 	     #next;
 	}
-	if ($e->{OnlyShowIn} and ";$e->{OnlyShowIn};" !~ /;$desktop;/) {
-	    $e->{'X-Disable'} = 'true';
-	    $e->{'X-Disable-Reason'} = "Only shown in $e->{OnlyShowIn}";
-	     #next;
+	if ($e->{OnlyShowIn}) {
+	    my $found = 0;
+	    foreach my $desktop (@desktops) {
+		if (";$e->{OnlyShowIn};" =~ /;$desktop;/) {
+		    $found = 1;
+		    last;
+		}
+	    }
+	    if (!$found) {
+		$e->{'X-Disable'} = 'true';
+		$e->{'X-Disable-Reason'} = "Only shown in $e->{OnlyShowIn}";
+		#next;
+	    }
 	}
-	if ($e->{NotShowIn} and ";$e->{NotShowIn};" =~ /;$desktop;/) {
-	    $e->{'X-Disable'} = 'true';
-	    $e->{'X-Disable-Reason'} = "Not shown in $e->{NotShowIn}";
-	     #next;
+	if ($e->{NotShowIn}) {
+	    my $found = 0;
+	    foreach my $desktop (@desktops) {
+		if (";$e->{NotShowIn};" =~ /;$desktop;/) {
+		    $found = 1;
+		    last;
+		}
+	    }
+	    if ($found) {
+		$e->{'X-Disable'} = 'true';
+		$e->{'X-Disable-Reason'} = "Not shown in $e->{NotShowIn}";
+		#next;
+	    }
 	}
         unless ($e->{TryExec}) {
             my @words = split(/\s+/,$e->{Exec});
