@@ -49,6 +49,7 @@ use XDG::Menu::Icewm;
 use XDG::Menu::Pekwm;
 use XDG::Menu::Jwm;
 use XDG::Menu::Fvwm;
+use XDG::Menu::WmakerOld;
 use XDG::Menu::Wmaker;
 use XDG::Menu::Ctwm;
 use XDG::Menu::Vtwm;
@@ -149,12 +150,12 @@ my $XDG_ICON_DIRS = join(':',"$HOME/.icons",map{"$_/icons"}@XDG_DATA_DIRS,'/usr/
 my @XDG_ICON_DIRS = split(/:/,$XDG_ICON_DIRS);
 
 my %outputs = (
-    fluxbox     => [ "$HOME/.fluxbox/menu" ],
-    blackbox    => [ "$HOME/.blackbox/menu", "$HOME/.bbmenu" ],
-    openbox     => [ "$HOME/.openbox/menu", "$HOME/.config/openbox/menu" ],
-    icewm       => [ "$HOME/.icewm/menu" ],
-    pekwm       => [ "$HOME/.pekwm/menu" ],
-    jwm         => [ "$HOME/.jwm/menu" ],
+    fluxbox	=> [ "$HOME/.fluxbox/menu" ],
+    blackbox	=> [ "$HOME/.blackbox/menu", "$HOME/.bbmenu" ],
+    openbox	=> [ "$HOME/.openbox/menu", "$HOME/.config/openbox/menu" ],
+    icewm	=> [ "$HOME/.icewm/menu" ],
+    pekwm	=> [ "$HOME/.pekwm/menu" ],
+    jwm		=> [ "$HOME/.jwm/menu" ],
     fvwm	=> [ "$HOME/.fvwm/menu" ],
     wmaker	=> [ "$HOME/GNUstep/Defaults/WMRootMenu" ],
     ctwm	=> [ "$HOME/.ctwm/menu" ],
@@ -166,15 +167,16 @@ my %outputs = (
 );
 
 my %formats = (
-    fluxbox     => [qw(FLUXBOX  XDG::Menu::Fluxbox  )],
-    blackbox    => [qw(BLACKBOX XDG::Menu::Blackbox )],
-    openbox     => [qw(OPENBOX  XDG::Menu::Openbox  )],
-    openbox3    => [qw(OPENBOX  XDG::Menu::Openbox3 )],
-    icewm       => [qw(ICEWM    XDG::Menu::Icewm    )],
-    pekwm       => [qw(PEKWM    XDG::Menu::Pekwm    )],
-    jwm         => [qw(JWM      XDG::Menu::Jwm      )],
+    fluxbox	=> [qw(FLUXBOX	XDG::Menu::Fluxbox  )],
+    blackbox	=> [qw(BLACKBOX	XDG::Menu::Blackbox )],
+    openbox	=> [qw(OPENBOX	XDG::Menu::Openbox  )],
+    openbox3	=> [qw(OPENBOX	XDG::Menu::Openbox3 )],
+    icewm	=> [qw(ICEWM	XDG::Menu::Icewm    )],
+    pekwm	=> [qw(PEKWM	XDG::Menu::Pekwm    )],
+    jwm		=> [qw(JWM	XDG::Menu::Jwm      )],
     fvwm	=> [qw(FVWM	XDG::Menu::Fvwm	    )],
-    wmaker      => [qw(WMAKER   XDG::Menu::Wmaker   )],
+    wmaker	=> [qw(WMAKER	XDG::Menu::Wmaker   )],
+    wmakerold	=> [qw(WMAKER	XDG::Menu::WmakerOld)],
     ctwm	=> [qw(CTWM	XDG::Menu::Ctwm	    )],
     vtwm	=> [qw(VTWM	XDG::Menu::Vtwm	    )],
     twm		=> [qw(TWM	XDG::Menu::Twm	    )],
@@ -184,20 +186,20 @@ my %formats = (
 );
 
 my %desktops = (
-    FLUXBOX     => [qw(fluxbox  XDG::Menu::Fluxbox  )],
-    BLACKBOX    => [qw(blackbox XDG::Menu::Blackbox )],
-    OPENBOX     => [qw(openbox3 XDG::Menu::Openbox3 )],
-    ICEWM       => [qw(icewm    XDG::Menu::Icewm    )],
-    PEKWM       => [qw(pekwm    XDG::Menu::Pekwm    )],
-    JWM         => [qw(jwm      XDG::Menu::Jwm      )],
+    FLUXBOX	=> [qw(fluxbox	XDG::Menu::Fluxbox  )],
+    BLACKBOX	=> [qw(blackbox	XDG::Menu::Blackbox )],
+    OPENBOX	=> [qw(openbox3	XDG::Menu::Openbox3 )],
+    ICEWM	=> [qw(icewm	XDG::Menu::Icewm    )],
+    PEKWM	=> [qw(pekwm	XDG::Menu::Pekwm    )],
+    JWM		=> [qw(jwm	XDG::Menu::Jwm      )],
     FVWM	=> [qw(fvwm	XDG::Menu::Fvwm	    )],
-    WMAKER      => [qw(wmaker   XDG::Menu::Wmaker   )],
+    WMAKER	=> [qw(wmaker	XDG::Menu::Wmaker   )],
     CTWM	=> [qw(ctwm	XDG::Menu::Ctwm	    )],
     VTWM	=> [qw(vtwm	XDG::Menu::Vtwm	    )],
     TWM		=> [qw(twm	XDG::Menu::Twm	    )],
     UWM		=> [qw(uwm	XDG::Menu::Uwm	    )],
     WAIMEA	=> [qw(waimea	XDG::Menu::Waimea   )],
-    LXDE        => [qw(openbox3 XDG::Menu::Openbox3 )],
+    LXDE	=> [qw(openbox3 XDG::Menu::Openbox3 )],
 );
 
 

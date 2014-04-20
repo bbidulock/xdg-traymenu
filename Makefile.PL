@@ -14,6 +14,8 @@ WriteMakefile(
 		'xdg-icon',
 		'xdg-traymenu',
 		'xdg-menugen',
+		'wm-winlist',
+		'wm-winmenu',
 	],
 	PREREQ_PM => {
 		'Carp' => 0,			# perl

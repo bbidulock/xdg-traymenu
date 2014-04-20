@@ -4,6 +4,8 @@ MANIFEST.SKIP
 xdg-icon
 xdg-traymenu
 xdg-menugen
+wm-winlist
+wm-winmenu
 xdg-traymenu.desktop
 lib/XDG/Context.pm
 lib/XDG/IconData.pm
@@ -22,6 +24,7 @@ lib/XDG/Menu/Parser.pm
 lib/XDG/Menu/Pekwm.pm
 lib/XDG/Menu/PerlPanel.pm
 lib/XDG/Menu.pm
+lib/XDG/Menu/Tray/Base.pm
 lib/XDG/Menu/Tray/Blackbox.pm
 lib/XDG/Menu/Tray/Ctwm.pm
 lib/XDG/Menu/Tray/Fluxbox.pm
@@ -31,11 +34,16 @@ lib/XDG/Menu/Traymenu.pm
 lib/XDG/Menu/Tray/Mwm.pm
 lib/XDG/Menu/Tray/Openbox3.pm
 lib/XDG/Menu/Tray/Openbox.pm
+lib/XDG/Menu/Tray/Pekwm.pm
 lib/XDG/Menu/Tray.pm
 lib/XDG/Menu/Tray/Twm.pm
+lib/XDG/Menu/Tray/Uwm.pm
+lib/XDG/Menu/Tray/Vtwm.pm
+lib/XDG/Menu/Tray/Waimea.pm
 lib/XDG/Menu/Tray/Wmaker.pm
 lib/XDG/Menu/Twm.pm
 lib/XDG/Menu/Uwm.pm
 lib/XDG/Menu/Vtwm.pm
 lib/XDG/Menu/Waimea.pm
+lib/XDG/Menu/WmakerOld.pm
 lib/XDG/Menu/Wmaker.pm
