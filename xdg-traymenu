@@ -252,7 +252,7 @@ of B<xdg->traymenu>:
 =item B<--help>, B<-h>
 
 Print usage information, including the current values of option
-defaults, and exits.
+defaults, and exit.
 
 =item B<--refresh>, B<-r>
 
