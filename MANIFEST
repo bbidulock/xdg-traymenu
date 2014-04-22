@@ -18,6 +18,7 @@ lib/XDG/Menu/Fluxbox.pm
 lib/XDG/Menu/Fvwm.pm
 lib/XDG/Menu/Icewm.pm
 lib/XDG/Menu/Jwm.pm
+lib/XDG/Menu/Mwm.pm
 lib/XDG/Menu/Openbox3.pm
 lib/XDG/Menu/Openbox.pm
 lib/XDG/Menu/Parser.pm
@@ -28,6 +29,7 @@ lib/XDG/Menu/Tray/Base.pm
 lib/XDG/Menu/Tray/Blackbox.pm
 lib/XDG/Menu/Tray/Ctwm.pm
 lib/XDG/Menu/Tray/Fluxbox.pm
+lib/XDG/Menu/Tray/Fvwm.pm
 lib/XDG/Menu/Tray/Icewm.pm
 lib/XDG/Menu/Tray/Jwm.pm
 lib/XDG/Menu/Traymenu.pm
