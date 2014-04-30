@@ -9,7 +9,9 @@ wm-winmenu
 xdg-traymenu.desktop
 lib/XDG/Context.pm
 lib/XDG/IconData.pm
+lib/XDG/Icons/Fast.pm
 lib/XDG/Icons.pm
+lib/XDG/Icons/Slow.pm
 lib/XDG/IconTheme.pm
 lib/XDG/Menu/Base.pm
 lib/XDG/Menu/Blackbox.pm
