@@ -1,6 +1,3 @@
-use XDG::Icons;
-
-
 package XDG::Menu::Layout::Item;
 use strict;
 use warnings;
@@ -119,6 +116,7 @@ sub Icon {
 
 package XDG::Menu::DesktopAction;
 use Carp qw(cluck croak confess);
+use XDG::Icons;
 use strict;
 use warnings;
 
