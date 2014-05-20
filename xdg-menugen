@@ -300,23 +300,63 @@ is available.
 
 =cut
 
+my ($wmname,$format,$output);
+
+# If we can identify a running window manager, use that format before that
+# specified by XDG_CURRENT_DESKTOP.  We cannot use Gtk2 directly here because
+# we want this program to run without Gtk2.
+#
+if (-x "/usr/bin/xde-identify") {
+	my $wm = {};
+	chomp(my $pl = `xde-identify --perl`);
+	eval "\$wm = $pl;";
+	$wmname = "\L$wm->{XDE_WM_NAME}\E";
+	$format = $wmname;
+	$output = $wm->{XDE_WM_MENU};
+}
+
+$wmname = '' unless $wmname;
+$wmname = 'wmaker' if "\L$wmname\E" eq 'windowmaker';
+$wmname = 'ctwm' if "\L$wmname\E" eq 'workspacemanager';
+$output = '' unless $output;
+
+# handle XDG_CURRENT_DESKTOP with multiple values separated by ':'
+#
+if ($wmname) {
+	$format = $wmname;
+} else {
+	$format = "\L$XDG_CURRENT_DESKTOP\E";
+}
+if ($format =~ m{:}) {
+	foreach my $f (keys %formats) {
+		if ($format =~ m{:$f:}i) {
+			$format = $f;
+			last;
+		}
+	}
+	if ($format =~ m{:}) {
+		$format =~ s{.*:}{};
+	}
+}
+
 my %ops = (
     help        => '',
-    format      => "\L$XDG_CURRENT_DESKTOP\E",
+    wmname	=> "\L$wmname\E",
+    format	=> "\L$format\E",
     fullmenu    => '',
-    desktop     => "\U$XDG_CURRENT_DESKTOP\E",
+    desktop	=> "\U$format\E",
     charset     => langinfo(CODESET),
     language    => setlocale(LC_MESSAGES),
     root_menu   => $XDG_ROOT_MENU,
     die_on_error=> '',
     verbose     => '',
-    output      => '',
+    output      => $output,
     icons       => '',
     noicons     => '',
     theme       => $XDG_ICON_THEME,
     monitor     => '',
     style	=> 'fullmenu',
-    launch	=> '',
+    launch	=> (-x "/usr/bin/xdg-launch") ? 1 : '',
 );
 
 my $syntax = GetOptions(
@@ -500,7 +540,7 @@ OPTIONS:
         directories for changes and regenerate the menu when required;
         implies the --output option.
 
-    --launch,-L --nolaunch
+    --launch,-L --nolaunch  [default: $ops{launch}]
         use xdg-launch program to launch desktop entry directly
 EOF
     exit($retval);
