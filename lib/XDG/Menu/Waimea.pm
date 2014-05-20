@@ -121,7 +121,7 @@ sub rootmenu {
 	my $text = '';
 	$text .= sprintf "%s\n", '[start] (rootmenu)';
 	$text .= $entries;
-	$text .= sprintf "%s\n", '  [nop] (------------) {}';
+	$text .= sprintf "%s\n", '  [nop] ('. "-" x 32 .') {}';
 	$text .= sprintf "%s\n", '  [workspaces] (Workspace List)';
 	$text .= sprintf "%s\n", '  [config] (Configuration)';
 	$text .= sprintf "%s\n", '  [submenu] (Styles) {Choose a style...}';
@@ -131,7 +131,7 @@ sub rootmenu {
 	$text .= sprintf "%s\n", '  [end]';
 	$text .= $self->wmmenu();
 	$text .= sprintf "%s\n", '  [reconfig] (Reconfigure)';
-	$text .= sprintf "%s\n", '  [nop] (------------) {}';
+	$text .= sprintf "%s\n", '  [nop] ('. "-" x 32 .') {}';
 	$text .= sprintf "%s\n", '  [exit] (Exit)';
 	$text .= sprintf "%s\n", '[end]';
 	$text .= sprintf "%s\n", '[include] (~/.waimea/winmenu)';
@@ -163,7 +163,7 @@ sub Header {
 }
 sub Separator {
 	my ($self,$item,$indent) = @_;
-	return sprintf "%s[nop] (------------) {}\n",
+	return sprintf "%s[nop] (". "-" x 32 .") {}\n",
 	       $indent;
 }
 sub Application {
