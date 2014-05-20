@@ -620,12 +620,16 @@ sub get_xsessions {
             push @todelete, $s;
             next;
         }
-        if ($e->{NoDisplay} and $e->{NoDisplay} =~ m{true|yes}i) {
-            print STDERR "$s ($e->{Name}) is NoDisplay!\n"
-                if $self->{verbose};
-            push @todelete, $s;
-            next;
-        }
+#
+# NoDisplay is often used to hide XSession desktop entries from
+# the application menu
+#
+#        if ($e->{NoDisplay} and $e->{NoDisplay} =~ m{true|yes}i) {
+#            print STDERR "$s ($e->{Name}) is NoDisplay!\n"
+#                if $self->{verbose};
+#            push @todelete, $s;
+#            next;
+#        }
         unless ($e->{TryExec}) {
             my @words = split(/\s+/,$e->{Exec});
             $e->{TryExec} = $words[0];
