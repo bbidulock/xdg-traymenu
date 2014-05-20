@@ -120,11 +120,8 @@ sub rootmenu {
 	my ($self,$entries) = @_;
 	my $text = '';
 	$text .= sprintf "%s\n", '[start] (rootmenu)';
-	$text .= "\n";
 	$text .= $entries;
-	$text .= "\n";
-	$text .= sprintf "%s\n", '  [nop] (------------) {}',
-	$text .= "\n";
+	$text .= sprintf "%s\n", '  [nop] (------------) {}';
 	$text .= sprintf "%s\n", '  [workspaces] (Workspace List)';
 	$text .= sprintf "%s\n", '  [config] (Configuration)';
 	$text .= sprintf "%s\n", '  [submenu] (Styles) {Choose a style...}';
@@ -134,11 +131,10 @@ sub rootmenu {
 	$text .= sprintf "%s\n", '  [end]';
 	$text .= $self->wmmenu();
 	$text .= sprintf "%s\n", '  [reconfig] (Reconfigure)';
-	$text .= "\n";
-	$text .= sprintf "%s\n", '  [nop] (------------) {}',
-	$text .= "\n";
+	$text .= sprintf "%s\n", '  [nop] (------------) {}';
 	$text .= sprintf "%s\n", '  [exit] (Exit)';
 	$text .= sprintf "%s\n", '[end]';
+	$text .= sprintf "%s\n", '[include] (~/.waimea/winmenu)';
 	return $text;
 }
 sub build {
@@ -162,22 +158,22 @@ sub Menu {
 sub Header {
 	my ($self,$item,$indent) = @_;
 	my $name = $item->Name; $name =~ s/[)]/\\)/g;
-	return sprintf "\n%s[nop] (%s)\n\n",
+	return sprintf "%s[nop] (%s)\n",
 	       $indent, $name;
 }
 sub Separator {
 	my ($self,$item,$indent) = @_;
-	return sprintf "\n%s[nop] (------------) {}\n\n",
+	return sprintf "%s[nop] (------------) {}\n",
 	       $indent;
 }
 sub Application {
 	my ($self,$item,$indent) = @_;
 	my $name = $item->Name; $name =~ s/[)]/\\)/g;
 	if ($self->{ops}{launch}) {
-	    return sprintf "\n%s[exec] (%s) {xdg-launch %s}\n\n",
+	    return sprintf "%s[exec] (%s) {xdg-launch %s}\n",
 		   $indent, $name, $item->Id;
 	} else {
-	    return sprintf "\n%s[exec] (%s) {%s}\n\n",
+	    return sprintf "%s[exec] (%s) {%s}\n",
 		   $indent, $name, $item->Exec;
 	}
 }
@@ -188,10 +184,10 @@ sub Directory {
 	# no empty menus...
 	return $text unless @{$menu->{Elements}};
 	my $name = $item->Name; $name =~ s/[)]/\\)/g;
-	$text .= sprintf "\n%s[submenu] (%s) {%s}\n",
+	$text .= sprintf "%s[submenu] (%s) {%s}\n",
 		$indent, $name, $item->Name." Menu";
 	$text .= $self->build($menu,$indent.'  ');
-	$text .= sprintf "%s[end]\n\n",
+	$text .= sprintf "%s[end]\n",
 		$indent;
 	return $text;
 }
