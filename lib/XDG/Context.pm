@@ -587,7 +587,17 @@ sub get_xsessions {
             $e{Exec} = '' unless $e{Exec};
             $e{SessionManaged} = 'false' unless $e{SessionManaged};
             $e{Comment} = $e{Name} unless $e{Comment};
-            $e{Label} = "\L$e{Name}\E" unless $e{Label};
+            $e{Label} = "\L$e{id}\E" unless $e{Label};
+	    $e{Label} =~ s{\.desktop$}{};
+	    if ($e{Actions}) {
+		my @actions = split(/;/,$e{Actions});
+		foreach my $a (@actions) {
+		    next unless $a;
+		    my %a = $self->get_entry($d,$f,"Desktop Action $a");
+		    next unless %a;
+		    $e{_actions}{$a} = \%a;
+		}
+	    }
             $files{$f} = \%e;
         }
         closedir($dh);
@@ -602,21 +612,27 @@ sub get_xsessions {
     my @PATH = split(/:/,$ENV{PATH});
     foreach my $s (keys %sessions) {
         my $e = $sessions{$s};
+	print STDERR "---------------------------\n"
+	    if $self->{ops}{verbose};
+	foreach (sort keys %$e) {
+	    print STDERR "$_ => $e->{$_}\n"
+		if $self->{ops}{verbose};
+	}
         unless ($e->{Name}) {
             print STDERR "$s has no Name!\n"
-                if $self->{verbose};
+                if $self->{ops}{verbose};
             push @todelete, $s;
             next;
         }
         unless ($e->{Exec}) {
             print STDERR "$s ($e->{Name}): has no Exec!\n"
-                if $self->{verbose};
+                if $self->{ops}{verbose};
             push @todelete, $s;
             next;
         }
         if ($e->{Hidden} and $e->{Hidden} =~ m{true|yes}i) {
             print STDERR "$s ($e->{Name}) is Hidden!\n"
-                if $self->{verbose};
+                if $self->{ops}{verbose};
             push @todelete, $s;
             next;
         }
@@ -626,7 +642,7 @@ sub get_xsessions {
 #
 #        if ($e->{NoDisplay} and $e->{NoDisplay} =~ m{true|yes}i) {
 #            print STDERR "$s ($e->{Name}) is NoDisplay!\n"
-#                if $self->{verbose};
+#                if $self->{ops}{verbose};
 #            push @todelete, $s;
 #            next;
 #        }
@@ -638,7 +654,7 @@ sub get_xsessions {
             if ($x =~ m{/}) {
                 unless (-x "$x") {
                     print STDERR "$s ($e->{Name}) $x is not executable!\n"
-                        if $self->{verbose};
+                        if $self->{ops}{verbose};
                     push @todelete, $s;
                     next;
                 }
@@ -653,7 +669,7 @@ sub get_xsessions {
                 }
                 unless ($found) {
                     print STDERR "$s ($e->{Name}) $x is not executable!\n"
-                        if $self->{verbose};
+                        if $self->{ops}{verbose};
                     push @todelete, $s;
                     next;
                 }
@@ -662,7 +678,7 @@ sub get_xsessions {
     }
     foreach (@todelete) {
         print STDERR "Deleting $_ ($sessions{$_}->{Name})\n"
-            if $self->{verbose};
+            if $self->{ops}{verbose};
         delete $sessions{$_};
     }
     $self->{dirs}{xsessions} = \%sessiondirs;
