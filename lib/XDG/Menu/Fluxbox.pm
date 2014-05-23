@@ -306,21 +306,30 @@ sub styles_xde {
 	if (@mstyles) {
 	    $text .= sprintf "%s%s\n", $indent, '[submenu] (Mixed Styles) {Choose a style...}'.$icon;
 	    foreach (sort @mstyles) {
-		$text .= sprintf "%s  [exec] (%s) {xde-style -s -r '%s'}%s\n", $indent, $_, $_, $icon;
+		my $file = $styles->{mixed}{$_}[0];
+		$file =~ s{/theme.cfg$}{};
+		$text .= sprintf "%s  [style] (%s) {%s}\n", $indent, $_, $file;
+		#$text .= sprintf "%s  [exec] (%s) {xde-style -s -r '%s'}%s\n", $indent, $_, $_, $icon;
 	    }
 	    $text .= sprintf "%s%s\n", $indent, '[end] # (Mixed Styles)';
 	}
 	if (@sstyles) {
 	    $text .= sprintf "%s%s\n", $indent, '[submenu] (System Styles) {Choose a style...}'.$icon;
 	    foreach (sort @sstyles) {
-		$text .= sprintf "%s  [exec] (%s) {xde-style -s -r -y '%s'}%s\n", $indent, $_, $_, $icon;
+		my $file = $styles->{system}{$_}[0];
+		$file =~ s{/theme.cfg$}{};
+		$text .= sprintf "%s  [style] (%s) {%s}\n", $indent, $_, $file;
+		#$text .= sprintf "%s  [exec] (%s) {xde-style -s -r -y '%s'}%s\n", $indent, $_, $_, $icon;
 	    }
 	    $text .= sprintf "%s%s\n", $indent, '[end] # (System Styles)';
 	}
 	if (@ustyles) {
 	    $text .= sprintf "%s%s\n", $indent, '[submenu] (User Styles) {Choose a style...}'.$icon;
 	    foreach (sort @ustyles) {
-		$text .= sprintf "%s  [exec] (%s) {xde-style -s -r -u '%s'}%s\n", $indent, $_, $_, $icon;
+		my $file = $styles->{user}{$_}[0];
+		$file =~ s{/theme.cfg$}{};
+		$text .= sprintf "%s  [style] (%s) {%s}\n", $indent, $_, $file;
+		#$text .= sprintf "%s  [exec] (%s) {xde-style -s -r -u '%s'}%s\n", $indent, $_, $_, $icon;
 	    }
 	    $text .= sprintf "%s%s\n", $indent, '[end] # (User Styles)';
 	}
