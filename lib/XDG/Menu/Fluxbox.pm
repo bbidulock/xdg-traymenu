@@ -1,5 +1,6 @@
 package XDG::Menu::Fluxbox;
 use base qw(XDG::Menu::Base);
+use File::Which;
 use strict;
 use warnings;
 
@@ -145,13 +146,8 @@ sub rootmenu {
     $text .= sprintf "%s\n", '  [separator]';
     $text .= sprintf "%s\n", '  [submenu] (Fluxbox menu)'.$self->icon('fluxbox');
     $text .= sprintf "%s\n", '    [config] (Configure)'.$self->icon('preferences-desktop');
-    $text .= sprintf "%s\n", '    [submenu] (System Styles) {Choose a style...}'.$self->icon('style');
-    $text .= sprintf "%s\n", '      [stylesdir] (/usr/share/fluxbox/styles)';
-    $text .= sprintf "%s\n", '    [end] # (System Styles)';
-    $text .= sprintf "%s\n", '    [submenu] (User Styles) {Choose a style...}'.$self->icon('style');
-    $text .= sprintf "%s\n", '      [stylesdir] (~/.fluxbox/styles)';
-    $text .= sprintf "%s\n", '      [stylesdir] (~/.config/fluxbox/styles)';
-    $text .= sprintf "%s\n", '    [end] # (User Styles)';
+    $text .= $self->themes('    ');
+    $text .= $self->styles('    ');
     $text .= sprintf "%s\n", '    [submenu] (Backgrounds) {Set the Background}';
     $text .= sprintf "%s\n", '      [exec] (Random Background) {fbsetbg -r /usr/share/fluxbox/backgrounds}';
     $text .= sprintf "%s\n", '    [end]';
@@ -235,6 +231,124 @@ sub Directory {
     $text .= sprintf "%s[end] # (%s)\n",
 	    $indent, $name;
     return $text;
+}
+
+sub themes_xde {
+    my($self,$indent) = @_;
+    my $text = '';
+    my $themes;
+    eval "\$themes = ".`xde-style -l -t --perl`;
+    if ($themes) {
+	my(@uthemes,@sthemes,@mthemes);
+	foreach (qw(user system mixed)) {
+	    $themes->{$_} = {} unless $themes->{$_};
+	}
+	@uthemes = keys %{$themes->{user}};
+	@sthemes = keys %{$themes->{system}};
+	@mthemes = keys %{$themes->{mixed}};
+	my $icon = $self->icon('style');
+	if (@mthemes) {
+	    $text .= sprintf "%s%s\n", $indent, '[submenu] (Mixed Themes) {Choose a theme...}'.$icon;
+	    foreach (sort @mthemes) {
+		$text .= sprintf "%s  [exec] (%s) {xde-style -s -r '%s'}%s\n", $indent, $_, $_, $icon;
+	    }
+	    $text .= sprintf "%s%s\n", $indent, '[end] # (Mixed Themes)';
+	}
+	if (@sthemes) {
+	    $text .= sprintf "%s%s\n", $indent, '[submenu] (System Themes) {Choose a theme...}'.$icon;
+	    foreach (sort @sthemes) {
+		$text .= sprintf "%s  [exec] (%s) {xde-style -s -r -y '%s'}%s\n", $indent, $_, $_, $icon;
+	    }
+	    $text .= sprintf "%s%s\n", $indent, '[end] # (System Themes)';
+	}
+	if (@uthemes) {
+	    $text .= sprintf "%s%s\n", $indent, '[submenu] (User Themes) {Choose a theme...}'.$icon;
+	    foreach (sort @uthemes) {
+		$text .= sprintf "%s  [exec] (%s) {xde-style -s -r -u '%s'}%s\n", $indent, $_, $_, $icon;
+	    }
+	    $text .= sprintf "%s%s\n", $indent, '[end] # (User Themes)';
+	}
+    }
+    return $text;
+}
+
+sub themes_old {
+    my($self,$indent) = @_;
+    my $text = '';
+    return $text;
+}
+
+sub themes {
+    my $self = shift;
+    if (File::Which::which('xde-style')) {
+	return $self->themes_xde(@_);
+    } else {
+	return $self->themes_old(@_);
+    }
+}
+
+sub styles_xde {
+    my($self,$indent) = @_;
+    my $text = '';
+    my($styles,$themes);
+    eval "\$styles = ".`xde-style -l --perl`;
+    eval "\$themes = ".`xde-style -l -t --perl`;
+    if ($styles and $themes) {
+	my(@ustyles,@sstyles,@mstyles);
+	foreach (qw(user system mixed)) {
+	    $styles->{$_} = {} unless $styles->{$_};
+	    $themes->{$_} = {} unless $themes->{$_};
+	}
+	@ustyles = map {exists $themes->{user}{$_}   ? () : $_} keys %{$styles->{user}};
+	@sstyles = map {exists $themes->{system}{$_} ? () : $_} keys %{$styles->{system}};
+	@mstyles = map {exists $themes->{mixed}{$_}  ? () : $_} keys %{$styles->{mixed}};
+	my $icon = $self->icon('style');
+	if (@mstyles) {
+	    $text .= sprintf "%s%s\n", $indent, '[submenu] (Mixed Styles) {Choose a style...}'.$icon;
+	    foreach (sort @mstyles) {
+		$text .= sprintf "%s  [exec] (%s) {xde-style -s -r '%s'}%s\n", $indent, $_, $_, $icon;
+	    }
+	    $text .= sprintf "%s%s\n", $indent, '[end] # (Mixed Styles)';
+	}
+	if (@sstyles) {
+	    $text .= sprintf "%s%s\n", $indent, '[submenu] (System Styles) {Choose a style...}'.$icon;
+	    foreach (sort @sstyles) {
+		$text .= sprintf "%s  [exec] (%s) {xde-style -s -r -y '%s'}%s\n", $indent, $_, $_, $icon;
+	    }
+	    $text .= sprintf "%s%s\n", $indent, '[end] # (System Styles)';
+	}
+	if (@ustyles) {
+	    $text .= sprintf "%s%s\n", $indent, '[submenu] (User Styles) {Choose a style...}'.$icon;
+	    foreach (sort @ustyles) {
+		$text .= sprintf "%s  [exec] (%s) {xde-style -s -r -u '%s'}%s\n", $indent, $_, $_, $icon;
+	    }
+	    $text .= sprintf "%s%s\n", $indent, '[end] # (User Styles)';
+	}
+    }
+    return $text;
+}
+
+sub styles_old {
+    my($self,$indent) = @_;
+    my $icon = $self->icon('style');
+    my $text = '';
+    $text .= sprintf "%s%s\n", $indent, '[submenu] (System Styles) {Choose a style...}'.$icon;
+    $text .= sprintf "%s%s\n", $indent, '  [stylesdir] (/usr/share/fluxbox/styles)';
+    $text .= sprintf "%s%s\n", $indent, '[end] # (System Styles)';
+    $text .= sprintf "%s%s\n", $indent, '[submenu] (User Styles) {Choose a style...}'.$icon;
+    $text .= sprintf "%s%s\n", $indent, '  [stylesdir] (~/.fluxbox/styles)';
+    $text .= sprintf "%s%s\n", $indent, '  [stylesdir] (~/.config/fluxbox/styles)';
+    $text .= sprintf "%s%s\n", $indent, '[end] # (User Styles)';
+    return $text;
+}
+
+sub styles {
+    my $self = shift;
+    if (File::Which::which('xde-style')) {
+	return $self->styles_xde(@_);
+    } else {
+	return $self->styles_old(@_);
+    }
 }
 
 1;

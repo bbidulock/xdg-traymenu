@@ -224,6 +224,7 @@ sub themes_xde {
     }
     return $text;
 }
+
 sub themes_old {
     my($self,$indent) = @_;
     my $text = '';
