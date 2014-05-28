@@ -1,5 +1,5 @@
 package XDG::Menu::Tray::Blackbox;
-use base qw(XDG::Menu::Tray);
+use base qw(XDG::Menu::Tray::Base);
 use strict;
 use warnings;
 
@@ -25,39 +25,34 @@ B<XDG::Menu::Tray::Blackbox> has the following methods:
 
 =over
 
-=item XDG::Menu::Tray::Blackbox->B<new>() => XDG::Menu::Tray::Blackbox
+=item $tray->B<create_wmmenu>() => Gtk2::MenuItem
 
-Creates a new XDG::Menu::Tray::Blackbox instance for creating Gtk2
-menus.
-
-=cut
-
-sub new {
-    return bless {}, shift;
-}
-
-=item $tray->B<create>($tree) => Gtk2::Menu
-
-Creates the Gtk2 menu from menu tree, C<$tree>, and returns the menu as
-a Gtk2::Menu object.  C<$tree> must have been created as a result of
-parsing the XDG menu using XDG::Menu::Parser (see L<XDG::Menu(3pm)>).
+Creates the window manager specific Gtk2 menu and returns the menu as
+a Gtk2::MenuItem object, to be included in a superior menu.
 
 =back
 
 =cut
 
-sub create {
-    my ($self,$item) = @_;
-    my $m = Gtk2::Menu->new;
-    $self->build($item,$m);
-    my ($mi,$im,$sm);
-
-    $mi = Gtk2::SeparatorMenuItem->new;
-    $m->append($mi);
-
-    $sm = Gtk2::Menu->new;
-
-    $mi
+sub create_wmmenu {
+	my $self = shift;
 }
+
+1;
+
+__END__
+
+=head1 AUTHOR
+
+Brian Bidulock <bidulock@cpan.org>
+
+=head1 SEE ALSO
+
+L<XDG::Menu(3pm)>,
+L<XDG::Menu::Tray(3pm)>
+
+=cut
+
+# vim: set sw=4 tw=72 fo=tcqlorn foldmarker==head,=head foldmethod=marker:
 
 

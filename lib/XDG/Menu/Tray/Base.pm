@@ -1,5 +1,5 @@
 package XDG::Menu::Tray::Base;
-use base qw(XDG::Menu::Base);
+use base qw(XDG::Menu::Tray);
 use Glib qw(TRUE FALSE);
 use Gtk2;
 use strict;

@@ -1,5 +1,5 @@
 package XDG::Menu::Tray::Fluxbox;
-use base qw(XDG::Menu::Tray);
+use base qw(XDG::Menu::Tray::Base);
 use strict;
 use warnings;
 
@@ -40,6 +40,9 @@ sub new {
 Creates the Gtk2 menu from menu tree, C<$tree>, and returns the menu as
 a Gtk2::Menu object.  C<$tree> must have been created as a result of
 parsing the XDG menu using XDG::Menu::Parser (see L<XDG::Menu(3pm)>).
+
+Creates the window manager specific Gtk2 menu and returns the menu as
+a Gtk2::MenuItem object, to be included in a superior menu.
 
 =back
 

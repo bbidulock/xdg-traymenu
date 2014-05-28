@@ -1,11 +1,11 @@
 package XDG::Menu::Tray::Jwm;
-use base qw(XDG::Menu::Tray);
+use base qw(XDG::Menu::Tray::Base);
 use strict;
 use warnings;
 
 =head1 NAME
 
-XDG::Menu::Tray::Jwm - generate a JWM system tray menu
+ XDG::Menu::Tray::Jwm - generate a JWM system tray menu from an XDG::Menu tree
 
 =head1 SYNOPSIS
 
@@ -16,52 +16,27 @@ XDG::Menu::Tray::Jwm - generate a JWM system tray menu
 
 =head1 DESCRIPTION
 
-B<XDG::Menu::Tray::Jwm> is a module that reads an
-L<XDG::Menu::Layout(3pm)> tree and generates a Gtk2 menu for JWM.
+B<XDG::Menu::Tray::Jwm> is a module that reads an XDG::Menu::Layout
+tree and generates a Gtk2 menu for JWM.
 
 =head1 METHODS
 
-The following methods are provided:
+B<XDG::Menu::Tray::Jwm> has the following methods:
 
 =over
 
-=item $tray = XDG::Menu::Tray::Jwm->B<new>()
+=item $tray->B<create_wmmenu>() => Gtk2::MenuItem
 
-Creates a new XDG::Menu::Tray::Jwm instance for creating a  Gtk2::Menu.
-
-=cut
-
-sub new { return bless {}, shift }
-
-=item $tray->B<create>(I<$tree>) => Gtk2::Menu
-
-Creates the L<Gtk2(3pm)> menu from menu tree, I<$tree>, and returns the
-menu as a L<Gtk2::Menu(3pm)> object.  I<$tree> must have been created as
-a result of parsing the XDG menu using XDG::Menu::Parser (see
-L<XDG::Menu(3pm)>).
-
-The resulting menu has window-manager specific actions that are included
-in a C<JWM> submenu.
-
-=cut
-
-sub create {
-    my ($self,$item) = @_;
-    my $m = Gtk2::Menu->new;
-    $self->build($item,$m);
-    my ($mi,$im,$sm);
-
-    $mi = Gtk2::SeparatorMenuItem->new;
-    $m->append($mi);
-
-    $sm = Gtk2::Menu->new;
-
-    $mi
-}
+Creates the window manager specific Gtk2 menu and returns the menu as
+a Gtk2::MenuItem object, to be included in a superior menu.
 
 =back
 
 =cut
+
+sub create_wmmenu {
+	my $self = shift;
+}
 
 1;
 
@@ -74,7 +49,10 @@ Brian Bidulock <bidulock@cpan.org>
 =head1 SEE ALSO
 
 L<XDG::Menu(3pm)>,
-L<XDG::Menu::Tray(3pm)>.
+L<XDG::Menu::Tray(3pm)>
 
+=cut
 
 # vim: set sw=4 tw=72 fo=tcqlorn foldmarker==head,=head foldmethod=marker:
+
+
