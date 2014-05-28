@@ -103,6 +103,10 @@ sub wmmenu {
 	$name = $_ unless $name;
 	next if "\L$name\E" eq "blackbox";
 	my $exec = $wm->{Exec};
+	if ($self->{ops}{launch}) {
+	    $exec = "$self->{ops}{launch} -X $wm->{id}";
+	    $exec =~ s{\.desktop$}{};
+	}
 	$text .= sprintf "%s  [restart] (Start %s) {%s}\n",$indent,$name,$exec;
     }
     $text .= sprintf "%s%s\n", $indent, '[end]';
@@ -129,6 +133,8 @@ sub rootmenu {
 	$text .= $self->styles('  ');
 	$text .= $self->wmmenu('  ');
 	$text .= sprintf "%s\n", '  [reconfig] (Reconfigure)';
+	$text .= sprintf "%s\n", '  [exec] (Refresh Menu) {xdg-menugen -format blackbox -desktop BLACKBOX -launch -o '.$self->{ops}{output}
+	    if $self->{ops}{output} and which('xdg-menugen');
 	$text .= sprintf "%s\n", '  [nop] ('. "\N{EM DASH}" x 12 .') {}';
 	$text .= sprintf "%s\n", '  [exit] (Exit)';
 	$text .= sprintf "%s\n", '[end]';
@@ -166,13 +172,11 @@ sub Separator {
 sub Application {
 	my ($self,$item,$indent) = @_;
 	my $name = $item->Name; $name =~ s/[)]/\\)/g;
-	if ($self->{ops}{launch}) {
-	    return sprintf "%s[exec] (%s) {xdg-launch %s}\n",
-		   $indent, $name, $item->Id;
-	} else {
-	    return sprintf "%s[exec] (%s) {%s}\n",
-		   $indent, $name, $item->Exec;
-	}
+	my $exec = $item->Exec;
+	$exec = "$self->{ops}{launch} ".$item->Id
+	    if $self->{ops}{launch};
+	return sprintf "%s[exec] (%s) {%s}\n",
+	       $indent, $name, $exec;
 }
 sub Directory {
 	my ($self,$item,$indent) = @_;

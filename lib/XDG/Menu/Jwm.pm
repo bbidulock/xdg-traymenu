@@ -137,6 +137,10 @@ sub wmmenu {
 	my $exec = $wm->{Exec};
 	my $icon = $self->icon($wm->{Icon});
 	$icon = $self->icon('preferences-system-windows') unless $icon;
+	if ($self->{ops}{launch}) {
+	    $exec = "$self->{ops}{launch} -X $wm->{id}";
+	    $exec =~ s{\.desktop$}{};
+	}
 	$text .= sprintf "%s%s\n", $indent, q(  <Exit ).$icon.q(label=").escape($name).q(" confirm="false">).$exec.q(</Exit>);
     }
     $text .= sprintf "%s%s\n", $indent, q(</Menu>);
@@ -174,7 +178,8 @@ sub rootmenu {
     $text .= $self->themes('    ');
     $text .= $self->styles('    ');
     $text .= $self->wmmenu('    ');
-    $text .= q(    <Program ).$self->icon('gtk-refresh').q(label="Regenerate Menu">xde-menugen -o /home/brian/.jwm/menu.new</Program>)."\n";
+    $text .= q(    <Program ).$self->icon('gtk-refresh').q(label="Regenerate Menu">xde-menugen -format jwm -desktop JWM -o ).$self->{ops}{output}.q(</Program>)."\n"
+	if $self->{ops}{output};
     $text .= q(  </Menu>)."\n";
     $text .= q(  <Separator/>)."\n";
     $text .= q(  <Restart ).$self->icon('gtk-refresh').q(label="Restart"/>)."\n";
@@ -213,13 +218,11 @@ sub Separator {
 sub Application {
     my ($self,$item,$indent) = @_;
     my $name = $item->Name; $name =~ s/["]/\\"/g;
-    if ($self->{ops}{launch}) {
-	return sprintf "%s<Program icon=\"%s\" label=\"%s\">xdg-launch %s</Program>\n",
-	       $indent, $item->Icon([qw(png svg xpm jpg)]), escape($name), $item->Id;
-    } else {
-	return sprintf "%s<Program icon=\"%s\" label=\"%s\">%s</Program>\n",
-	       $indent, $item->Icon([qw(png svg xpm jpg)]), escape($name), $item->Exec;
-    }
+    my $exec = $item->Exec;
+    $exec = "$self->{ops}{launch} ".$item->Id
+	if $self->{ops}{launch};
+    return sprintf "%s<Program icon=\"%s\" label=\"%s\">%s</Program>\n",
+	   $indent, $item->Icon([qw(png svg xpm jpg)]), escape($name), $exec;
 }
 sub Directory {
     my ($self,$item,$indent) = @_;

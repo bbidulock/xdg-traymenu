@@ -32,6 +32,7 @@ specific menus for a number of window-managers.
 
 =cut
 
+use File::Which qw(which);
 use Getopt::Long;
 use Encode qw(encode decode);
 use I18N::Langinfo qw(langinfo CODESET);
@@ -497,6 +498,8 @@ if ($format =~ m{:}) {
 	}
 }
 
+my $launcher = which('xdg-launch') ? 'xdg-launch --pointer' : '';
+
 my %ops = (
     help	=> '',
     wmname	=> "\L$wmname\E",
@@ -508,7 +511,7 @@ my %ops = (
     root_menu	=> $XDG_ROOT_MENU,
     die_on_error=> '',
     verbose	=> '',
-    output	=> $output,
+    output	=> undef,
     icons	=> '',
     noicons	=> '',
     theme	=> $XDG_ICON_THEME,
@@ -519,7 +522,7 @@ my %ops = (
     refresh	=> '',
     restart	=> '',
     quit	=> '',
-    launch	=> (-x "/usr/bin/xdg-launch") ? 1 : '',
+    launch	=> $launcher,
 );
 
 my $syntax = GetOptions(
@@ -568,15 +571,32 @@ if ($cmds > 1) {
 
 undef $cmds;
 
-if ($ops{output} eq '') {
-    if (exists $outputs{$ops{format}}) {
-        foreach (@{$outputs{$ops{format}}}) {
-            if (-f $_) {
-                $ops{output} = $_;
-                last;
-            }
-        }
+if (defined $ops{output}) {
+    unless ($output) {
+	if (exists $outputs{$ops{format}}) {
+	    foreach (@{$outputs{$ops{format}}}) {
+		if (-f $_) {
+		    $ops{output} = $_;
+		    last;
+		}
+	    }
+	}
     }
+    $ops{output} = $output unless $ops{output};
+    unless ($ops{output}) {
+	    print STDERR "nowhere to output";
+	    usage(2);
+    }
+}
+
+$ops{launch} = '' unless $ops{launch};
+if ($ops{launch}) {
+    unless ($launcher) {
+	$ops{launch} = 0;
+	print STDERR "missing xdg-launch program";
+	usage(2);
+    }
+    $ops{launch} = $launcher;
 }
 
 if ($ops{root_menu} and not -f $ops{root_menu}) {
