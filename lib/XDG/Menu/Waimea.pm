@@ -100,7 +100,7 @@ sub wmmenu {
 	my $wm = $wms->{$_};
 	my $name = $wm->{Name};
 	$name = $_ unless $name;
-	next if "\L$name\E" eq "waimea";
+	next if "\L$name" eq "waimea";
 	my $exec = $wm->{Exec};
 	if ($self->{ops}{launch}) {
 	    $exec = "$self->{ops}{launch} -X $wm->{id}";

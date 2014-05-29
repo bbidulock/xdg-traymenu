@@ -241,7 +241,7 @@ sub Directory {
 
 =item $jwm->B<themes>(I<$indent>) => I<$text>
 
-Accetps and indent for output, I<$indent>, and generates a themes
+Accepts an indent for output, I<$indent>, and generates a themes
 submenu of available XDE themes.  This method will use the L<xde-style(1)>
 program if available; otherwise, it will use the scripts available the
 the XDE styles package.

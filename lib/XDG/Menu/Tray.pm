@@ -72,7 +72,7 @@ sub create_wmmenu {
 	my($info,$name);
 	eval "\$info = ".`xde-identify --perl`;
 	if (($name = $info->{XDE_WM_NAME})) {
-	    $name = "XDG::Menu::Tray::\U".substr($name, 1, 1)."\L".substr($name, 2)."\E";
+	    $name = "XDG::Menu::Tray::\U".substr($name, 1, 1)."\L".substr($name, 2);
 	}
     }
     return $mi;

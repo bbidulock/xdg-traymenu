@@ -177,7 +177,7 @@ sub default {
     $self->{XDG_CURRENT_DESKTOP} = $self->{ops}{desktop};
     $self->{XDG_CURRENT_DESKTOP} = $self->{ops}{session} unless $self->{XDG_CURRENT_DESKTOP};
     $self->{XDG_CURRENT_DESKTOP} = '' unless $self->{XDG_CURRENT_DESKTOP};
-    $self->{XDG_CURRENT_DESKTOP} = "\U$self->{XDG_CURRENT_DESKTOP}\E" if $self->{XDG_CURRENT_DESKTOP};
+    $self->{XDG_CURRENT_DESKTOP} = "\U$self->{XDG_CURRENT_DESKTOP}" if $self->{XDG_CURRENT_DESKTOP};
     foreach my $var (@{&MYPATH}) {
 	    $self->{$var} =~ s(~)($self->{HOME})g if $self->{$var};
     }
@@ -395,7 +395,7 @@ sub set_vendor {
     my $self = shift;
     my $vendor = shift;
     if ($vendor) {
-	$vendor = "\L$vendor\E";
+	$vendor = "\L$vendor";
 	$self->setup(
 	    XDG_VENDOR_ID   => "${vendor}",
 	    XDG_MENU_PREFIX => "${vendor}-",
@@ -587,7 +587,7 @@ sub get_xsessions {
             $e{Exec} = '' unless $e{Exec};
             $e{SessionManaged} = 'false' unless $e{SessionManaged};
             $e{Comment} = $e{Name} unless $e{Comment};
-            $e{Label} = "\L$e{id}\E" unless $e{Label};
+            $e{Label} = "\L$e{id}" unless $e{Label};
 	    $e{Label} =~ s{\.desktop$}{};
 	    if ($e{Actions}) {
 		my @actions = split(/;/,$e{Actions});

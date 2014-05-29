@@ -111,7 +111,7 @@ sub wmmenu {
 	my $wm = $wms->{$_};
 	my $name = $wm->{Name};
 	$name = $_ unless $name;
-	next if "\L$name\E" eq 'pekwm';
+	next if "\L$name" eq 'pekwm';
 	my $exec = $wm->{Exec};
 	my $icon = $self->icon($wm->{Icon}, 'preferences-system-windows');
 	if ($self->{ops}{launch}) {

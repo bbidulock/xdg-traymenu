@@ -119,7 +119,7 @@ sub wmmenu {
 	my $wm = $wms->{$_};
 	my $name = $wm->{Name};
 	$name = $_ unless $name;
-	next if "\L$name\E" eq "ctwm";
+	next if "\L$name" eq "ctwm";
 	my $exec = $wm->{Exec};
 	my $icon = $self->icon($wm->{Icon});
 	$icon = $self->icon('preferences-system-windows') unless $icon;

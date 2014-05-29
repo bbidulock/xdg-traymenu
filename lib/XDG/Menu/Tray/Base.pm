@@ -41,7 +41,7 @@ sub wmmenu {
     foreach (sort keys %$wms) {
 	my $wm = $wms->{$_};
 	my $name = $wm->{Name};
-	next if "\L$name\E" eq "\L$current\E";
+	next if "\L$name" eq "\L$current";
 	$name =~ s{_}{ }g; # get rid of accelerators
 	my $exec = $wm->{Exec};
 	my $icon = $self->icon($wm->{Icon},qw(png xpm svg jpg));
