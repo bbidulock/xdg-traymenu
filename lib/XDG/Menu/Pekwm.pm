@@ -189,7 +189,8 @@ sub rootmenu {
     $text .= q(    Entry = "Exit" { ).$self->icon('gtk-quit').q(Actions = "Exit" })."\n";
     $text .= q(})."\n";
     $text .= q()."\n";
-    $text .= q(COMMAND = "cat $HOME/.pekwm/window")."\n";
+#    $text .= q(COMMAND = "cat $HOME/.pekwm/window")."\n";
+    $text .= q(INCLUDE = "window")."\n";
     $text .= q()."\n";
     return $text;
 }
