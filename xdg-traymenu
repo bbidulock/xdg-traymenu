@@ -36,7 +36,7 @@ use File::Which qw(which);
 use Getopt::Long;
 use Encode qw(encode decode);
 use I18N::Langinfo qw(langinfo CODESET);
-use POSIX qw(locale_h);
+use POSIX qw(locale_h setlocale);
 use MIME::Base64;
 use Storable qw(nfreeze thaw);
 use Glib qw(TRUE FALSE);
@@ -499,6 +499,8 @@ if ($format =~ m{:}) {
 }
 
 my $launcher = which('xdg-launch') ? 'xdg-launch --pointer' : '';
+
+setlocale(LC_ALL, "");
 
 my %ops = (
     help	=> '',
