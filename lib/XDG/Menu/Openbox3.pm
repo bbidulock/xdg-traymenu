@@ -94,7 +94,7 @@ sub create {
     my $entries = $self->build($tree,'');
     push @{$self->{menus}},$self->appmenu($entries,$name);
     return $entries if $style eq 'entries';
-    $entries = "  <menu id=\"$name Menu\" label=\"$name\" ".$self->icon('start-here')."/>\n"
+    $entries = "  <menu id=\"$name Menu\" label=\"$name\" ".$self->icon('start-here')." />\n"
 	if $style eq 'submenu';
     push @{$self->{menus}},$self->rootmenu($entries,$name)
 	if $style ne 'appmenu';
@@ -112,7 +112,7 @@ sub wmmenu {
     $text .= "<menu id=\"Window Managers Menu\" label=\"Window Managers\" ".$self->icon('gtk-quit').">\n";
     $self->getenv();
     $self->default();
-    my $wms = $self->get_xsesions();
+    my $wms = $self->get_xsessions();
     foreach (sort keys %$wms) {
 	my $wm = $wms->{$_};
 	my $name = $wm->{Name};
@@ -140,9 +140,11 @@ sub obmenu {
     push @{$self->{menus}}, $self->wmmenu();
     my $text = '';
     $text .= "<menu id=\"Openbox\" label=\"Openbox\" ".$self->icon('openbox').">\n";
-    $text .= "  <menu id=\"client-list-menu\" label=\"Desktops\" ".$self->icon('preferences-desktop-display')."/>\n";
-    $text .= "  <menu id=\"client-list-combined-menu\" label=\"Windows\" ".$self->icon('preferences-system-windows')."/>\n";
-    $text .= "  <menu id=\"Window Managers Menu\" label=\"Window Managers\" ".$self->icon('gtk-quit')."/>\n";
+    $text .= "  <menu id=\"client-list-menu\" label=\"Desktops\" ".$self->icon('preferences-desktop-display')." />\n";
+    $text .= "  <menu id=\"client-list-combined-menu\" label=\"Windows\" ".$self->icon('preferences-system-windows')." />\n";
+    $text .= "  <menu id=\"Window Managers Menu\" label=\"Window Managers\" ".$self->icon('gtk-quit')." />\n";
+    $text .= "  <menu id=\"Themes Menu\" label=\"Themes\" ".$self->icon('style')." execute=\"xde-style -m -t\" />\n";
+    $text .= "  <menu id=\"Styles Menu\" label=\"Styles\" ".$self->icon('style')." execute=\"xde-style -m\" />\n";
     $text .= "</menu>\n";
     return $text;
 }
@@ -175,7 +177,7 @@ sub rootmenu {
     $text .= "<menu id=\"root-menu\" label=\"Openbox 3\">\n";
     $text .= $entries;
     $text .= "  <separator />\n";
-    $text .= "  <menu id=\"Openbox\" label=\"Openbox\" ".$self->icon('openbox')."/>\n";
+    $text .= "  <menu id=\"Openbox\" label=\"Openbox\" ".$self->icon('openbox')." />\n";
     if ($self->{ops}{output}) {
 	$text .= "  <item label=\"Refresh Menu\" ".$self->icon('gtk-refresh').">\n";
 	$text .= "    <action name=\"Execute\">\n";
@@ -279,7 +281,7 @@ sub Directory {
     $text .= $self->build($item->{Menu},'');
     $text .= sprintf "</menu> <!-- %s -->\n",$id;
     push @{$self->{menus}}, $text;
-    return sprintf "%s<menu id=\"%s\" label=\"%s\" icon=\"%s\"/>\n",$indent,$id,$label,$icon;
+    return sprintf "%s<menu id=\"%s\" label=\"%s\" icon=\"%s\" />\n",$indent,$id,$label,$icon;
 }
 
 1;
