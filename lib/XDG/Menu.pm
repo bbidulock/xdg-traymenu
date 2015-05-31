@@ -276,7 +276,7 @@ sub new {
 	    unless ($self->{_actions}{$action}{Name}) {
 		$self->{_actions}{$action}{Name} = $action;
 		push @todelete, $action;
-		continue;
+		next;
 	    }
 	    unless ($self->{_actions}{$action}{Exec}) {
 		$self->{_actions}{$action}{Exec} = '';
