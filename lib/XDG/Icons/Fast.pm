@@ -96,7 +96,6 @@ sub new {
             $self->{extensions} = [ split(/,/,$ext) ];
         }
     }
-    print STDERR "Assigned extensions are: ",join(",",@{$self->{extensions}}),"\n";
     return $self;
 }
 
