@@ -75,6 +75,7 @@ my %ops = (
     extensions	=> [],
     prepend	=> [],
     append	=> [],
+    slow	=> '',
 );
 
 my $syntax = GetOptions(
@@ -85,6 +86,7 @@ my $syntax = GetOptions(
     "extensions|e=s"=>$ops{extensions},
     "prepend|p=s"   =>$ops{prepend},
     "append|a=s"    =>$ops{append},
+    "slow|w"	    =>\$ops{slow},
     "verbose|v"	    =>\$ops{verbose},
 );
 
@@ -194,9 +196,11 @@ push @{$ops{iconname}}, split(/,/,join(',',@ARGV)) if @ARGV;
 $ops{extensions} = undef unless @{$ops{extensions}};
 
 my $icons = new XDG::Icons({
-        Prepend	=>$ops{prepend},
-        Append	=>$ops{append},
-        Theme	=>$ops{theme},
+        Prepend	    =>$ops{prepend},
+        Append	    =>$ops{append},
+        Theme	    =>$ops{theme},
+	Extensions  =>$ops{extensions},
+	Slow	    =>$ops{slow},
 });
 
 if ($ops{verbose}) {

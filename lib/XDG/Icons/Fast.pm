@@ -93,9 +93,10 @@ sub new {
             $self->{extensions} = $ext;
         }
         else {
-            $self->{extensions} = split(/,/,$ext);
+            $self->{extensions} = [ split(/,/,$ext) ];
         }
     }
+    print STDERR "Assigned extensions are: ",join(",",@{$self->{extensions}}),"\n";
     return $self;
 }
 

@@ -108,7 +108,7 @@ arrayref or a scalar comma-separated list of extensions.
 
 sub new {
     my($type,$options) = @_;
-    if ($FAST) {
+    if ($FAST and not $options->{Slow}) {
 	return XDG::Icons::Fast->new($options);
     } else {
 	return XDG::Icons::Slow->new($options);
