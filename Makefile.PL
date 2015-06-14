@@ -41,8 +41,7 @@ install:: install_desktop
 
 install_desktop:
 	install -Dm0644 xdg-traymenu.desktop "\$(DESTDIR)/usr/share/applications/xdg-traymenu.desktop"
-	install -Dm0644 xdg-traymenu.desktop "\$(DESTDIR)/usr/share/xde/applications/xdg-traymenu.desktop"
-	install -Dm0644 xdg-traymenu.desktop "\$(DESTDIR)/etc/xdg/xde/autostart/xdg-traymenu.desktop"
+	install -Dm0644 xdg-traymenu.desktop "\$(DESTDIR)/etc/xdg/autostart/xdg-traymenu.desktop"
 
 MAKE_FRAG
 }
