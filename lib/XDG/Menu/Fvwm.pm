@@ -156,7 +156,7 @@ sub fvwmmenu {
     $text .= sprintf "%s\n", 'AddToMenu StartMenu@side.fvwm2.xpm@^black^';
     $text .= sprintf "+ \"%s%s\" %s\n", '&Applications',	'%programs.xpm%',	'Popup xdg_menu';
     $text .= sprintf "+ \"%s%s\" %s\n", '&Shells',		'%shells.xpm%',		'Popup Shells';
-    $text .= sprintf "+ \"%s%s\" %s\n", '&Programs',		'%programs.xpm%',	'Popup Programss';
+    $text .= sprintf "+ \"%s%s\" %s\n", '&Programs',		'%programs.xpm%',	'Popup Programs';
     $text .= sprintf "+ \"%s%s\" %s\n", '&Documents',		'%documents.xpm%',	'Popup Documents';
     $text .= sprintf "+ \"%s%s\" %s\n", '&Settings',		'%settings.xpm%',	'Popup Settings';
     $text .= $self->Separator();
